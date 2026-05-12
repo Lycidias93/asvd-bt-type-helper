@@ -1,17 +1,25 @@
 # Decisions
 
-## Keep this helper separate from ASVD
+## v0.4.15 remains pre-release
 
-The Bluetooth type helper is experimental and separate from Audio Safe Volume Disabler runtime behavior.
+The helper is verified on one Pixel setup and one target device. Public releases remain pre-release until more devices and OEM ROMs are tested.
 
-## Rejected approaches
+## Targeting model
 
-- No Google Play Services manipulation.
-- No offline UI unlock path.
-- No direct `/data/misc/bluedroid/bt_config.conf` patching.
-- No automatic boot-time changes.
-- No Bluetooth reload during active playback.
+Public usage must support both unique device name and MAC address. MAC is preferred when there is any risk of duplicate names.
 
-## Current accepted approach
+## SET guard
 
-Use a Magisk-installed privileged helper APK with explicit manual commands.
+All metadata-changing commands require `--confirm-set`. GET and LIST are read-only.
+
+## Magisk installer cleanup
+
+The installer may remove only temporary `/data/app` installs of `org.asvd.bttypehelper`. It must not remove an existing `/system`, `/product`, `/system_ext`, or `/vendor` package path.
+
+## Wrapper command paths
+
+Helper scripts must use absolute `/system/bin/...` paths. Bare Android commands were proven unreliable in Termux/Magisk invocation contexts.
+
+## AIO check rule
+
+Maintainer checks should be bundled into one command with one output tail and explicit `RESULT:` markers whenever possible.

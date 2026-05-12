@@ -1,121 +1,101 @@
 # ASVD BT Type Helper
 
-Experimental Bluetooth device type metadata helper for Android/Magisk.
+Experimental Magisk/priv-app helper for changing Android Bluetooth device type metadata.
 
-This project is a separate research/prototype repository for the Audio Safe Volume Disabler ecosystem. It is intentionally separate from the main ASVD module until the helper is proven safe and reproducible.
+The current verified use case is a Bluetooth receiver that Android classified as headphones, causing headphone-style audio behavior. The helper can set Android Bluetooth metadata key `17` to `Carkit`, which made the device show as **Auto** in Android's Bluetooth device settings on the verified test device.
 
 ## Current status
 
-Verified baseline so far:
+| Area | Status |
+|---|---|
+| Latest pre-release | `v0.4.15` |
+| Runtime model | Magisk `priv-app` helper |
+| Normal app support | Not supported |
+| Root/Magisk required | Yes |
+| Verified phone | Pixel 10 Pro XL / Android 16 / SDK 36 |
+| Verified target | `H222` BT receiver |
+| GET by name | Verified |
+| SET car/Carkit | Verified on the target above |
+| Other phones/OEMs | Unknown / tester feedback needed |
 
-- Device: Google Pixel 10 Pro XL
-- Android: 16 / SDK 36
-- Root: Magisk
-- Helper prototype: v0.4.11
-- Install mode: Magisk priv-app
-- Permissions: `BLUETOOTH_CONNECT` and `BLUETOOTH_PRIVILEGED` granted
-- Read-only H222 lookup: works
-- `BluetoothDevice.getMetadata(17)` for H222: works and currently returns `null`
-- `setMetadata(17, "Carkit")`: not yet verified
+## What it does
 
-## Scope
+- Lists paired Bluetooth devices.
+- Reads Bluetooth device metadata key `17`.
+- Sets metadata key `17` to `Carkit` for one explicitly selected device.
+- Supports device selection by unique Bluetooth name or MAC address.
+- Uses a guarded `--confirm-set` flow for writes.
 
-The helper is manual and experimental.
+## What it does not do
 
-It does:
-
-- install a small privileged helper APK through Magisk
-- expose a manual broadcast receiver
-- read Bluetooth device metadata for a named bonded device
-- later test writing device type metadata, only after read-only checks pass
-
-It does **not**:
-
-- disable or manipulate Google Play Services
-- reload Bluetooth automatically
-- run a boot service
-- patch `/data/misc/bluedroid/bt_config.conf`
-- modify ASVD runtime audio behavior
-
-## Safety rules
-
-Use read-only mode first. Do not run the set command until the read-only output is confirmed.
-
-Rejected paths:
-
-- Google Play Services disable/offline UI unlock path
-- direct `bt_config.conf` editing
-- automatic boot fixes
-- Bluetooth reload during active playback
-
-## Build
-
-From Termux on the device:
-
-```sh
-cd /storage/emulated/0/Download
-chmod +x ./build_asvd_bt_type_helper_privapp_v051.sh
-bash ./build_asvd_bt_type_helper_privapp_v051.sh
-```
-
-Expected artifact:
-
-```text
-/storage/emulated/0/Download/ASVD-BT-Type-Helper-v0.4.11.zip
-```
+- No Google Play Services manipulation.
+- No Bluetooth service reload.
+- No direct patching of `/data/misc/bluedroid/bt_config.conf`.
+- No background daemon.
+- No automatic boot-time changes.
+- No support for non-root / non-Magisk devices.
 
 ## Install
 
-Flash the ZIP in Magisk, then reboot.
-
-After reboot:
+Flash the ZIP in Magisk, reboot, then run:
 
 ```sh
-tsu /system/bin/pm path org.asvd.bttypehelper
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-grant.sh
 ```
 
-## Read-only check
+## Basic usage
+
+List paired devices with redacted MAC addresses:
 
 ```sh
-tsu /system/bin/am broadcast \
-  --user 0 \
-  --include-stopped-packages \
-  --receiver-foreground \
-  -n org.asvd.bttypehelper/.BtTypeReceiver \
-  -a org.asvd.bttypehelper.GET \
-  --es name H222
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-list.sh
 ```
 
-Known successful read-only result includes:
+Show full MAC addresses locally:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-list.sh --show-mac
+```
+
+Read a device by name:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name H222
+```
+
+Read a device by MAC address:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac AA:BB:CC:DD:EE:FF
+```
+
+Set a device to car/Carkit mode:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --confirm-set
+```
+
+Verify after setting:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name H222
+```
+
+Expected verified marker:
 
 ```text
-onReceive_enter=yes
-target_name=H222
-bonded_count=20
-target_matches=1
-name=H222
-type=1
-majorDeviceClass=1024
-deviceClass=1028
-metadata_17_before=null
+metadata_17_before=Carkit
 RESULT: ASVD_BT_TYPE_HELPER_GET_DONE
 ```
 
-## Roadmap
+## Safety
 
-- v0.4.12: improve wrapper output by reading broadcast result data/logcat reliably
-- v0.4.12: remove noisy fallback write to `/data/local/tmp`
-- v0.4.12: confirm `SET_CARKIT` action visibility before any write test
-- v0.5.0: first controlled `setMetadata(17, "Carkit")` test if read-only remains stable
+This is experimental system-level tooling. Use only on devices you can recover. Always verify the target device first with `helper-get.sh`. Do not run SET commands against ambiguous device names. Prefer `--mac` when multiple paired devices may share the same display name.
 
-## Rollback
+## Compatibility
 
-Remove the module in Magisk and reboot.
+See [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md).
 
-CLI fallback:
+## Testing and release workflow
 
-```sh
-tsu touch /data/adb/modules/asvd-bt-type-helper/remove
-reboot
-```
+See [`docs/TESTING.md`](docs/TESTING.md) and [`docs/WORKFLOW.md`](docs/WORKFLOW.md).

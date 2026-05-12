@@ -1,48 +1,41 @@
 # Changelog
 
+## v0.4.15 - pre-release
+
+- Added guarded Magisk installer cleanup for temporary `/data/app` parse-test installs.
+- Kept existing `/system` / `priv-app` package paths intact during install.
+- Kept helper scripts on absolute `/system/bin/...` command paths.
+- Kept `helper-set-type.sh` guarded by `--confirm-set`.
+- Verified H222 metadata remains `Carkit` after reboot on the reference Pixel setup.
+
+## v0.4.14
+
+- Added `helper-list.sh`.
+- Added name and MAC target selection support.
+- Added `helper-set-type.sh` with `--type car` / `auto` / `carkit` mapping to `Carkit`.
+- Added redacted default MAC output and local `--show-mac` mode.
+
+## v0.4.13
+
+- Fixed helper wrappers to use absolute `/system/bin/...` commands.
+- Verified GET wrapper path with H222.
+- Verified Carkit metadata persisted for H222.
+
+## v0.4.12
+
+- Removed `/data/local/tmp` write fallback to avoid SELinux EACCES noise.
+- Improved broadcast result-data and logcat diagnostics.
+
 ## v0.4.11
 
-- First working privileged APK install on Pixel Android 16.
-- APK is parseable and v3 signed.
-- Priv-app install path works through Magisk.
-- `BLUETOOTH_CONNECT` and `BLUETOOTH_PRIVILEGED` are granted.
-- Read-only `GET` broadcast works.
-- H222 is uniquely found among bonded devices.
-- `getMetadata(17)` works and returns `null` for H222.
-- Known issue: helper wrapper does not yet surface result data cleanly; result is visible through broadcast/logcat.
+- Added diagnostic logcat tag `ASVD-BT-HELPER`.
+- Added broadcast result-data output.
+- Verified privileged GET path for H222.
 
 ## v0.4.10
 
-- First APK-valid manual binary manifest build.
-- Parse/install test passed.
-- Priv-app Magisk install succeeded.
+- First APK-valid Magisk priv-app build with APK Signature Scheme v3.
 
-## v0.4.7 - v0.4.9
+## v0.4.x earlier
 
-- Fixed multiple manual binary manifest builder issues.
-- v0.4.7 fixed corrupt XML but lacked APK v2/v3 signing.
-- v0.4.8 added `apksigner` path.
-- v0.4.9 still had version string-pool bugs.
-
-## v0.4.5 - v0.4.6
-
-- Manual APK packaging path introduced after Termux `aapt/aapt2` failed.
-- v0.4.5 produced corrupt binary XML.
-- v0.4.6 fixed chunk sizing but still had string-pool issues.
-
-## v0.4.1 - v0.4.4
-
-- Termux `android.jar` and `aapt/aapt2` packaging path rejected.
-- Compile stubs worked for `javac`.
-- `aapt`/`aapt2` could not produce a valid APK on-device with available framework resources.
-
-## v0.3.x
-
-- `app_process`/`dalvikvm` helper path rejected.
-- Raw dex and jar/classes.dex did not execute the helper main method reliably.
-- Packaged-class and file-marker tests failed.
-
-## Earlier rejected paths
-
-- Google Play Services disable/offline UI path failed to unlock H222 type UI and caused Google Play Billing account-context side effects.
-- Direct Bluetooth config patching remains rejected.
+- Research builds for on-device APK packaging, manual binary AndroidManifest generation, privileged permission allowlist, and Bluetooth metadata access.
