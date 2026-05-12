@@ -1,5 +1,47 @@
 # Changelog
 
+<!-- since-prerelease-start -->
+## Changes since v0.4.15 pre-release
+
+This stable release includes all changes made after the v0.4.15 pre-release:
+
+### v0.5.0
+
+- Added the first user-friendly interactive setup wizard.
+- Added `helper-report.sh` for redacted support reports.
+- Added `/data/adb/asvd-bt-type-helper.conf` support.
+- Added `helper-apply-config.sh` for config-based application.
+- Added `helper-clear-type.sh` with guarded `--confirm-clear`.
+- Kept the safety model: no SET without explicit confirmation.
+- Known issue in v0.5.0: APK `versionName` still reported `0.4.15` although runtime/build output was v0.5.0.
+
+### v0.5.1
+
+- Fixed APK manifest version reporting: `versionCode=51`, `versionName=0.5.1`.
+- Added generic `SET_TYPE` handling.
+- Added guarded type mappings:
+  - `car` / `carkit` / `auto` -> `Carkit`
+  - `speaker` -> `Speaker` experimental
+  - `headphones` -> `Headphones` experimental
+  - `clear` -> metadata clear flow
+- Updated setup/config helpers for the expanded type model.
+- Verified H222 remained `metadata_17=Carkit` after upgrade.
+
+### v0.5.2
+
+- Promoted the project from pre-release to stable release.
+- Fixed setup wizard privacy: MAC addresses are redacted by default.
+- Added `helper-debug.sh` for public-safe GitHub/XDA reports.
+- Added `safe_to_paste_publicly=yes` guidance in debug output.
+- Verified v0.5.2 post-flash state:
+  - `versionCode=52`
+  - `versionName=0.5.2`
+  - package path `/system/priv-app/AsvdBtTypeHelper/AsvdBtTypeHelper.apk`
+  - H222 connected-car state remains `metadata_17=Carkit`
+- Kept speaker/headphones support experimental until UI mapping is verified on reference devices.
+
+<!-- since-prerelease-end -->
+
 ## v0.5.2 - 2026-05-12
 
 Stable release.
