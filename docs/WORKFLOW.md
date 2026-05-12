@@ -8,6 +8,8 @@
 - Build, parse-test, flash, reboot, verify.
 - Do not run SET before GET proves exactly one target.
 - Prefer MAC targeting for public instructions when duplicate names are possible.
+- Redact MAC addresses by default in public docs, reports, and wizard output.
+- Keep XDA/GitHub debug reports safe to paste publicly by default.
 
 ## Release gate
 
@@ -21,10 +23,12 @@
 8. Verify package path is `/system/priv-app/...`.
 9. Verify privileged Bluetooth permissions.
 10. Run `helper-get`.
-11. For SET releases, run exactly one confirmed target SET and follow with GET.
-12. Commit docs and build script.
-13. Publish GitHub pre-release with ZIP + SHA256.
+11. Run wizard smoke test with `q` abort.
+12. Run `helper-debug` and verify public-safe redaction.
+13. For SET releases, run exactly one confirmed target SET and follow with GET.
+14. Commit docs and build script.
+15. Publish GitHub release with ZIP + SHA256.
 
 ## Public release posture
 
-Until more devices are tested, releases stay pre-release. The verified support statement is limited to the reference Pixel setup and H222 target.
+`v0.5.2` is the first stable release. The verified support statement is still limited to the reference Pixel setup and H222 target until more tester reports arrive.

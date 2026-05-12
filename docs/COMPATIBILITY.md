@@ -2,23 +2,30 @@
 
 ## Verified
 
-| Device | Android | Root | Helper | GET | SET car/Carkit | UI result | Notes |
-|---|---:|---|---|---|---|---|---|
-| Pixel 10 Pro XL | 16 / SDK 36 | Magisk | v0.4.15 | PASS | PASS | Shows Auto | H222 BT receiver |
+| Phone | Android | Root | Module | Target | GET | SET car | UI/connected proof | Status |
+|---|---:|---|---|---|---|---|---|---|
+| Pixel 10 Pro XL | 16 / SDK 36 | Magisk 30700 alpha | v0.5.2 | H222 | PASS | PASS | `metadata_17=Carkit` while connected in car | Verified |
 
-## Expected but unverified
+## Observed UI references
 
-| Platform | Expected status |
-|---|---|
-| Other Pixel devices with Android 12+ and Magisk | Likely, needs testing |
-| AOSP-based ROMs with working priv-app permission allowlist | Possible, needs testing |
-| Samsung / One UI | Unknown |
-| Xiaomi / HyperOS | Unknown |
-| OnePlus / OxygenOS | Unknown |
+| Device | Android UI type | Metadata verified by this tool |
+|---|---|---|
+| H222 | Auto | `Carkit` verified |
+| KILBURN II | Speaker/Lautsprecher observed in UI | Not yet verified as `Speaker` metadata |
+| Nothing Headphone (1) | Headphones/Kopfhörer observed in UI | Not yet verified as `Headphones` metadata |
+
+## Unknown / tester feedback needed
+
+- Samsung One UI
+- Xiaomi / HyperOS
+- OnePlus / OxygenOS
+- LineageOS and other custom ROMs
+- Android 12-15 behavior
+- Non-Pixel Bluetooth Settings UI behavior
 
 ## Unsupported
 
-- Non-root devices.
-- Non-Magisk installs.
-- Devices where privileged app permission allowlisting is blocked.
-- Devices where OEM Bluetooth settings ignore metadata key `17`.
+- Non-root devices
+- Non-Magisk installs
+- Devices where priv-app permission allowlisting fails
+- Devices where OEM Bluetooth UI ignores metadata key `17`

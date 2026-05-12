@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.5.2 - 2026-05-12
+
+Stable release.
+
+- Fixed public wizard UX: MAC addresses are redacted by default.
+- Added `helper-debug.sh` for public-safe GitHub/XDA reports.
+- Added `safe_to_paste_publicly` guidance in debug output.
+- Verified post-flash package state: `versionCode=52`, `versionName=0.5.2`.
+- Verified H222 connected-car state remains `metadata_17=Carkit`.
+- Kept write safety: no SET without `--confirm-set`, no CLEAR without `--confirm-clear`.
+- Speaker/headphones type values are available but remain experimental until UI mapping is confirmed on reference devices.
+
+
 ## v0.4.15 - pre-release
 
 - Added guarded Magisk installer cleanup for temporary `/data/app` parse-test installs.

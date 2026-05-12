@@ -1,30 +1,36 @@
 # ASVD BT Type Helper
 
-Experimental Magisk/priv-app helper for changing Android Bluetooth device type metadata.
+ASVD BT Type Helper is a Magisk/priv-app helper for changing Android Bluetooth device type metadata.
 
-The current verified use case is a Bluetooth receiver that Android classified as headphones, causing headphone-style audio behavior. The helper can set Android Bluetooth metadata key `17` to `Carkit`, which made the device show as **Auto** in Android's Bluetooth device settings on the verified test device.
+The verified use case is a Bluetooth receiver that Android classified as headphones, causing headphone-style audio behavior. The helper can set Android Bluetooth metadata key `17` to `Carkit`, which made the receiver show as **Auto** in Android Bluetooth settings on the verified reference device.
 
 ## Current status
 
 | Area | Status |
 |---|---|
-| Latest pre-release | `v0.4.15` |
+| Latest release | `v0.5.2` |
 | Runtime model | Magisk `priv-app` helper |
 | Normal app support | Not supported |
 | Root/Magisk required | Yes |
 | Verified phone | Pixel 10 Pro XL / Android 16 / SDK 36 |
-| Verified target | `H222` BT receiver |
+| Verified target | `H222` Bluetooth receiver |
+| Verified connected-car state | Yes, `metadata_17=Carkit` while H222 is connected |
 | GET by name | Verified |
 | SET car/Carkit | Verified on the target above |
+| Wizard | Available, MAC-redacted by default |
+| Debug report | Available, safe for public GitHub/XDA paste by default |
+| Speaker/headphones metadata | Implemented, still experimental until UI mapping is verified |
 | Other phones/OEMs | Unknown / tester feedback needed |
 
 ## What it does
 
 - Lists paired Bluetooth devices.
 - Reads Bluetooth device metadata key `17`.
-- Sets metadata key `17` to `Carkit` for one explicitly selected device.
+- Sets metadata key `17` for one explicitly selected device.
 - Supports device selection by unique Bluetooth name or MAC address.
-- Uses a guarded `--confirm-set` flow for writes.
+- Provides an interactive setup wizard.
+- Provides a redacted debug report for GitHub/XDA support.
+- Uses guarded `--confirm-set` and `--confirm-clear` flows for writes.
 
 ## What it does not do
 
@@ -43,18 +49,22 @@ Flash the ZIP in Magisk, reboot, then run:
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-grant.sh
 ```
 
-## Basic usage
+## Recommended first run
+
+Use the wizard:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-setup.sh
+```
+
+The wizard redacts MAC addresses by default. Use `--show-mac` only locally when you need exact MAC targeting.
+
+## Basic commands
 
 List paired devices with redacted MAC addresses:
 
 ```sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-list.sh
-```
-
-Show full MAC addresses locally:
-
-```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-list.sh --show-mac
 ```
 
 Read a device by name:
@@ -81,16 +91,35 @@ Verify after setting:
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name H222
 ```
 
-Expected verified marker:
+Expected verified marker for the H222 reference target:
 
 ```text
 metadata_17_before=Carkit
 RESULT: ASVD_BT_TYPE_HELPER_GET_DONE
 ```
 
+## Debug report for GitHub/XDA
+
+Generate a public-safe debug report:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-debug.sh --name H222
+```
+
+The report redacts Bluetooth MAC addresses by default and writes a file to the Download folder.
+
+## Supported type names
+
+| CLI type | Metadata value | Status |
+|---|---|---|
+| `car`, `auto`, `carkit` | `Carkit` | Verified on H222 |
+| `speaker` | `Speaker` | Experimental |
+| `headphones` | `Headphones` | Experimental |
+| `clear`, `reset`, `null` | clear metadata key 17 | Implemented, use carefully |
+
 ## Safety
 
-This is experimental system-level tooling. Use only on devices you can recover. Always verify the target device first with `helper-get.sh`. Do not run SET commands against ambiguous device names. Prefer `--mac` when multiple paired devices may share the same display name.
+This is system-level tooling. Use only on devices you can recover. Always verify the target first with `helper-get.sh`. Do not run SET commands against ambiguous device names. Prefer `--mac` when multiple paired devices share the same display name.
 
 ## Compatibility
 

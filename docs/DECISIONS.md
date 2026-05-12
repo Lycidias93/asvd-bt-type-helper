@@ -1,25 +1,19 @@
 # Decisions
 
-## v0.4.15 remains pre-release
+## v0.5.2 stable release posture
 
-The helper is verified on one Pixel setup and one target device. Public releases remain pre-release until more devices and OEM ROMs are tested.
+`v0.5.2` is promoted to stable release because the core user-friendly flow is verified on the reference setup:
 
-## Targeting model
+- Magisk priv-app install works.
+- `versionCode=52` and `versionName=0.5.2` are correct.
+- H222 remains `metadata_17=Carkit` while connected in the car.
+- Wizard starts and aborts safely.
+- Debug report is redacted and suitable for public GitHub/XDA support.
 
-Public usage must support both unique device name and MAC address. MAC is preferred when there is any risk of duplicate names.
+## Safety decisions
 
-## SET guard
-
-All metadata-changing commands require `--confirm-set`. GET and LIST are read-only.
-
-## Magisk installer cleanup
-
-The installer may remove only temporary `/data/app` installs of `org.asvd.bttypehelper`. It must not remove an existing `/system`, `/product`, `/system_ext`, or `/vendor` package path.
-
-## Wrapper command paths
-
-Helper scripts must use absolute `/system/bin/...` paths. Bare Android commands were proven unreliable in Termux/Magisk invocation contexts.
-
-## AIO check rule
-
-Maintainer checks should be bundled into one command with one output tail and explicit `RESULT:` markers whenever possible.
+- No SET without `--confirm-set`.
+- No CLEAR without `--confirm-clear`.
+- MAC addresses are redacted by default.
+- Debug mode refuses intentional public MAC exposure.
+- Speaker/headphones values remain experimental until verified against UI behavior.

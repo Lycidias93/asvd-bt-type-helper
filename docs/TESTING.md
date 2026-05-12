@@ -1,102 +1,65 @@
 # Testing
 
-## Release candidate gate
+## Reference setup
 
-Run in this order:
+- Pixel 10 Pro XL
+- Android 16 / SDK 36
+- Magisk 30700 alpha
+- Target: H222 Bluetooth receiver
 
-```sh
-cd /storage/emulated/0/Download
-bash ./build_asvd_bt_type_helper_privapp_v055.sh
-```
+## Verified release: v0.5.2
 
-Expected:
+Post-flash AIO verification passed on 2026-05-12.
 
-```text
-RESULT: ASVD_BT_TYPE_HELPER_PRIVAPP_V055_BUILD_DONE
-```
-
-## APK parse/update test
-
-Before flashing, test the APK as a temporary user app:
-
-```sh
-SRC="$HOME/asvd-bt-type-helper-v055/AsvdBtTypeHelper.apk"
-DST="/data/local/tmp/AsvdBtTypeHelper-v0.4.15.apk"
-PKG="org.asvd.bttypehelper"
-
-tsu /system/bin/cp "$SRC" "$DST"
-tsu /system/bin/chmod 0644 "$DST"
-tsu /system/bin/pm install -r -d "$DST"
-tsu /system/bin/pm path "$PKG"
-```
-
-Expected:
+Verified markers:
 
 ```text
-Success
-package:/data/app/...
-```
-
-The Magisk installer for v0.4.15 removes this temporary `/data/app` install automatically when flashing. Manual cleanup remains safe:
-
-```sh
-tsu /system/bin/pm uninstall org.asvd.bttypehelper || true
-```
-
-## After flashing and reboot
-
-```sh
-tsu /system/bin/pm path org.asvd.bttypehelper
-tsu /system/bin/dumpsys package org.asvd.bttypehelper | /system/bin/grep -Ei 'versionName|versionCode|PRIVILEGED|BLUETOOTH|granted'
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name H222
-```
-
-Expected for the verified reference target:
-
-```text
+versionCode=52
+versionName=0.5.2
 package:/system/priv-app/AsvdBtTypeHelper/AsvdBtTypeHelper.apk
-versionCode=15
-versionName=0.4.15
-android.permission.BLUETOOTH_PRIVILEGED: granted=true
 metadata_17_before=Carkit
 RESULT: ASVD_BT_TYPE_HELPER_GET_DONE
-RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_DONE
+RESULT: ASVD_BT_TYPE_HELPER_DEBUG_DONE
+RESULT: ASVD_BT_TYPE_HELPER_DEBUG_FILE_WRITTEN
+RESULT: ASVD_BT_TYPE_HELPER_V052_POSTFLASH_MENU_DEBUG_AIO_DONE
 ```
 
-## AIO maintainer check
-
-The maintainer workflow prefers one bundled check with clear `RESULT:` markers. In Termux setups that provide `cgrun`:
+## Build and parse-test gate
 
 ```sh
 cgrun 'set -euo pipefail
-PKG="org.asvd.bttypehelper"
-MOD="/data/adb/modules/asvd-bt-type-helper"
-
-echo "== package =="
-tsu /system/bin/pm path "$PKG"
-
-echo "== package details =="
-tsu /system/bin/dumpsys package "$PKG" | /system/bin/grep -Ei "versionName|versionCode|PRIVILEGED|BLUETOOTH|granted"
-
-echo "== helper get =="
-tsu /system/bin/sh "$MOD/helper-get.sh" --name H222
-
-echo "RESULT: ASVD_BT_TYPE_HELPER_AIO_CHECK_DONE"
+cd /storage/emulated/0/Download
+sha256sum -c build_asvd_bt_type_helper_privapp_v058.sh.sha256
+bash -n ./build_asvd_bt_type_helper_privapp_v058.sh
+chmod +x ./build_asvd_bt_type_helper_privapp_v058.sh
+bash ./build_asvd_bt_type_helper_privapp_v058.sh
+SRC="$HOME/asvd-bt-type-helper-v058/AsvdBtTypeHelper.apk"
+DST="/data/local/tmp/AsvdBtTypeHelper-v0.5.2.apk"
+tsu /system/bin/cp "$SRC" "$DST"
+tsu /system/bin/chmod 0644 "$DST"
+tsu /system/bin/pm install -r -d "$DST"
+echo RESULT: ASVD_BT_TYPE_HELPER_V052_BUILD_PARSE_AIO_DONE
 '
 ```
 
-## SET test
-
-Only run after GET is clean and the target is unambiguous:
+## Post-flash debug gate
 
 ```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --confirm-set
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name H222
+cgrun 'set -euo pipefail
+MOD="/data/adb/modules/asvd-bt-type-helper"
+PKG="org.asvd.bttypehelper"
+tsu /system/bin/pm path "$PKG"
+tsu /system/bin/dumpsys package "$PKG" | /system/bin/grep -Ei "versionCode|versionName|PRIVILEGED|BLUETOOTH|granted"
+printf "q
+" | tsu /system/bin/sh "$MOD/helper-setup.sh"
+tsu /system/bin/sh "$MOD/helper-debug.sh" --name H222
+tsu /system/bin/sh "$MOD/helper-get.sh" --name H222
+echo RESULT: ASVD_BT_TYPE_HELPER_V052_POSTFLASH_MENU_DEBUG_AIO_DONE
+'
 ```
 
-Expected:
+## Safety notes
 
-```text
-metadata_17_before=Carkit
-RESULT: ASVD_BT_TYPE_HELPER_GET_DONE
-```
+- Do not test `speaker`, `headphones`, or `clear` on H222 while the car profile is needed.
+- Test speaker/headphones mapping later on non-critical reference devices.
+- `helper-debug.sh` output is designed to be safe for public GitHub/XDA reports.
