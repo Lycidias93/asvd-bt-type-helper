@@ -36,3 +36,18 @@
 ## Known release verification compatibility
 
 - Release verification must not use `gh release view --json isLatest`; use `tagName,name,isPrerelease,isDraft,url,assets` for compatibility.
+
+<!-- dynamic-online-update-release-gate-start -->
+## Dynamic build and online update release gate
+
+- Build scripts must derive generated work paths from the current build id, not from copied previous-version literals.
+- Before a build/release, gate with a stale workdir check such as `grep -n "asvd-bt-type-helper-v058" build_asvd_bt_type_helper_privapp_v059.sh` when moving from v058 to v059.
+- Online-update capable releases must include `updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json` in `module.prop`.
+- Repository root `update.json` must match the stable release assets:
+  - `version=0.5.3`
+  - `versionCode=53`
+  - `zipUrl=https://github.com/Lycidias93/asvd-bt-type-helper/releases/download/v0.5.3/ASVD-BT-Type-Helper-v0.5.3.zip`
+  - `changelog=https://github.com/Lycidias93/asvd-bt-type-helper/releases/tag/v0.5.3`
+- Final release verification must avoid `gh release view --json isLatest`; use `tagName,name,isPrerelease,isDraft,url,assets`.
+- Pixel post-flash AIO checks should avoid repeated `tsu` calls and avoid `tsu` inside command substitutions/pipelines; prefer one simple root shell or minimal direct checks.
+<!-- dynamic-online-update-release-gate-end -->

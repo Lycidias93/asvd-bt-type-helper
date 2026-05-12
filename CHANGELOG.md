@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.5.3 - 2026-05-12
+
+Stable release adding Magisk online update metadata.
+
+- Added `updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json` to `module.prop`.
+- Added repository `update.json` for Magisk online update checks.
+- Verified `update.json` schema and release asset SHA256.
+- No Bluetooth runtime behavior changes compared with v0.5.2.
+- H222 remains verified as `metadata_17=Carkit` on the reference Pixel setup.
+- Documented two build/workflow failure patterns:
+  - stale hardcoded workdir paths in generated build scripts
+  - Pixel post-flash checks hanging when repeatedly invoking `tsu` / `dumpsys` from `cgrun`
+
+
 <!-- since-prerelease-start -->
 ## Changes since v0.4.15 pre-release
 

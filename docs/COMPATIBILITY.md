@@ -29,3 +29,9 @@
 - Non-Magisk installs
 - Devices where priv-app permission allowlisting fails
 - Devices where OEM Bluetooth UI ignores metadata key `17`
+
+<!-- v053-online-update-compat-start -->
+## v0.5.3 compatibility note
+
+No Bluetooth runtime behavior changed compared with v0.5.2. Verified reference remains Pixel 10 Pro XL / Android 16 / Magisk alpha / H222 with `metadata_17=Carkit`.
+<!-- v053-online-update-compat-end -->

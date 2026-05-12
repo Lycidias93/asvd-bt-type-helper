@@ -17,3 +17,9 @@
 - MAC addresses are redacted by default.
 - Debug mode refuses intentional public MAC exposure.
 - Speaker/headphones values remain experimental until verified against UI behavior.
+
+<!-- v053-online-update-decision-start -->
+## 2026-05-12 · Add Magisk online update support
+
+Decision: add `updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json` to `module.prop` and maintain repository `update.json` from `v0.5.3` onward. Reason: enable Magisk online updates without changing Bluetooth runtime behavior.
+<!-- v053-online-update-decision-end -->

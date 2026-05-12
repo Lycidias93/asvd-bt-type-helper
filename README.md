@@ -128,3 +128,17 @@ See [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md).
 ## Testing and release workflow
 
 See [`docs/TESTING.md`](docs/TESTING.md) and [`docs/WORKFLOW.md`](docs/WORKFLOW.md).
+
+<!-- online-update-support-start -->
+## Online updates
+
+Online update support starts with `v0.5.3`.
+
+The Magisk module contains:
+
+```text
+updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json
+```
+
+The repository root contains `update.json`, which points Magisk to the latest stable release ZIP and changelog. Magisk compares `versionCode`; `v0.5.3` uses `versionCode=53`.
+<!-- online-update-support-end -->

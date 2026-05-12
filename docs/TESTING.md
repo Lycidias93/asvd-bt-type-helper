@@ -63,3 +63,18 @@ echo RESULT: ASVD_BT_TYPE_HELPER_V052_POSTFLASH_MENU_DEBUG_AIO_DONE
 - Do not test `speaker`, `headphones`, or `clear` on H222 while the car profile is needed.
 - Test speaker/headphones mapping later on non-critical reference devices.
 - `helper-debug.sh` output is designed to be safe for public GitHub/XDA reports.
+
+<!-- v053-online-update-test-start -->
+## v0.5.3 online update test
+
+Verified local release asset metadata for `v0.5.3`:
+
+```text
+version=0.5.3
+versionCode=53
+zipUrl=https://github.com/Lycidias93/asvd-bt-type-helper/releases/download/v0.5.3/ASVD-BT-Type-Helper-v0.5.3.zip
+changelog=https://github.com/Lycidias93/asvd-bt-type-helper/releases/tag/v0.5.3
+```
+
+Post-flash runtime remained healthy on the reference device with H222 `metadata_17=Carkit`.
+<!-- v053-online-update-test-end -->
