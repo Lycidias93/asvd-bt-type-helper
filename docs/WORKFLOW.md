@@ -32,3 +32,7 @@
 ## Public release posture
 
 `v0.5.2` is the first stable release. The verified support statement is still limited to the reference Pixel setup and H222 target until more tester reports arrive.
+
+## Known release verification compatibility
+
+- Release verification must not use `gh release view --json isLatest`; use `tagName,name,isPrerelease,isDraft,url,assets` for compatibility.
