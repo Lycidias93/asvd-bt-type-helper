@@ -44,10 +44,18 @@
 - Before a build/release, gate with a stale workdir check such as `grep -n "asvd-bt-type-helper-v058" build_asvd_bt_type_helper_privapp_v059.sh` when moving from v058 to v059.
 - Online-update capable releases must include `updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json` in `module.prop`.
 - Repository root `update.json` must match the stable release assets:
-  - `version=0.5.3`
-  - `versionCode=53`
-  - `zipUrl=https://github.com/Lycidias93/asvd-bt-type-helper/releases/download/v0.5.3/ASVD-BT-Type-Helper-v0.5.3.zip`
-  - `changelog=https://github.com/Lycidias93/asvd-bt-type-helper/releases/tag/v0.5.3`
+  - `version=0.5.4`
+  - `versionCode=54`
+  - `zipUrl=https://github.com/Lycidias93/asvd-bt-type-helper/releases/download/v0.5.4/ASVD-BT-Type-Helper-v0.5.4.zip`
+  - `changelog=https://github.com/Lycidias93/asvd-bt-type-helper/releases/tag/v0.5.4`
 - Final release verification must avoid `gh release view --json isLatest`; use `tagName,name,isPrerelease,isDraft,url,assets`.
 - Pixel post-flash AIO checks should avoid repeated `tsu` calls and avoid `tsu` inside command substitutions/pipelines; prefer one simple root shell or minimal direct checks.
 <!-- dynamic-online-update-release-gate-end -->
+
+<!-- android-awk-compat-start -->
+## Android awk compatibility
+
+- Avoid Android `/system/bin/awk` variable names that may collide with built-ins or functions, especially `exp`.
+- Avoid multiline `awk printf` strings in generated helper scripts.
+- Wizard smoke tests must hard-fail on `awk:`, `non-terminated string`, `syntax error`, `illegal statement`, or `giving up`.
+<!-- android-awk-compat-end -->

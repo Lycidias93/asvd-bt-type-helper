@@ -30,3 +30,9 @@ Decision: add `updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-t
 - `v0.5.3` is the first Magisk online-update capable release.
 - `updateJson` points to the repository root `update.json` on `main`.
 - Bluetooth runtime behavior remains unchanged from `v0.5.2`; H222 `Carkit` remains the verified reference state.
+
+<!-- decision-v054-ux-start -->
+## 2026-05-12 · v0.5.4 user-friendly UX release
+
+Decision: publish v0.5.4 as a stable UX/safety release with `asvd.sh`, doctor, update info, and dry-run flows. Bluetooth Java runtime behavior remains unchanged from v0.5.3; H222 remains the verified Carkit reference target.
+<!-- decision-v054-ux-end -->

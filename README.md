@@ -8,7 +8,7 @@ The verified use case is a Bluetooth receiver that Android classified as headpho
 
 | Area | Status |
 |---|---|
-| Latest release | `v0.5.3` |
+| Latest release | `v0.5.4` |
 | Runtime model | Magisk `priv-app` helper |
 | Normal app support | Not supported |
 | Root/Magisk required | Yes |
@@ -133,7 +133,7 @@ See [`docs/TESTING.md`](docs/TESTING.md) and [`docs/WORKFLOW.md`](docs/WORKFLOW.
 <!-- online-update-support-start -->
 ## Online updates
 
-Online update support starts with `v0.5.3`.
+Online update support starts with `v0.5.3`; latest stable release is `v0.5.4`.
 
 The Magisk module contains:
 
@@ -143,3 +143,25 @@ updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main
 
 The repository root contains `update.json`, which points Magisk to the latest stable release ZIP and changelog. Magisk compares `versionCode`; `v0.5.3` uses `versionCode=53`.
 <!-- online-update-support-end -->
+
+<!-- v054-user-friendly-ux-start -->
+## User-friendly UX in v0.5.4
+
+`v0.5.4` adds a one-command entry point and safe dry-run checks:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/asvd.sh
+```
+
+Useful support commands:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-doctor.sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-update-info.sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-setup.sh --dry-run
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --dry-run
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-clear-type.sh --name H222 --dry-run
+```
+
+Dry-run mode resolves the target and prints the planned action, but reports `write_performed=no` and does not change Bluetooth metadata.
+<!-- v054-user-friendly-ux-end -->

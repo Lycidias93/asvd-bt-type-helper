@@ -4,7 +4,7 @@
 
 | Phone | Android | Root | Module | Target | GET | SET car | UI/connected proof | Status |
 |---|---:|---|---|---|---|---|---|---|
-| Pixel 10 Pro XL | 16 / SDK 36 | Magisk 30700 alpha | v0.5.3 | H222 | PASS | PASS | `metadata_17=Carkit` while connected in car | Verified |
+| Pixel 10 Pro XL | 16 / SDK 36 | Magisk 30700 alpha | v0.5.4 | H222 | PASS | PASS | `metadata_17=Carkit` while connected in car | Verified |
 
 ## Observed UI references
 
@@ -35,3 +35,9 @@
 
 No Bluetooth runtime behavior changed compared with v0.5.2; v0.5.3 adds Magisk online-update metadata. Verified reference remains Pixel 10 Pro XL / Android 16 / Magisk alpha / H222 with `metadata_17=Carkit`.
 <!-- v053-online-update-compat-end -->
+
+<!-- v054-ux-compat-start -->
+## v0.5.4 compatibility note
+
+No Bluetooth Java runtime behavior changed compared with v0.5.3. The reference Pixel setup verified the new UX helpers, doctor, update info, and dry-run flows while H222 remained `metadata_17=Carkit`.
+<!-- v054-ux-compat-end -->

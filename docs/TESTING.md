@@ -7,7 +7,7 @@
 - Magisk 30700 alpha
 - Target: H222 Bluetooth receiver
 
-## Verified release: v0.5.3
+## Verified release: v0.5.4
 
 Post-flash online-update/runtime verification passed on 2026-05-12.
 
@@ -79,3 +79,27 @@ changelog=https://github.com/Lycidias93/asvd-bt-type-helper/releases/tag/v0.5.3
 
 Post-flash runtime remained healthy on the reference device with H222 `metadata_17=Carkit`.
 <!-- v053-online-update-test-end -->
+
+<!-- v054-user-friendly-test-start -->
+## v0.5.4 user-friendly UX smoke
+
+Post-flash smoke verification passed on the reference device.
+
+Verified markers:
+
+```text
+version=0.5.4
+versionCode=54
+PASS helper-doctor.sh
+PASS helper-update-info.sh
+PASS setup_dryrun_mac_redacted
+PASS setup_dryrun_cancelled
+PASS setup_dryrun_h222_listed
+PASS set_type_dry_run
+PASS clear_dry_run
+PASS h222_still_carkit
+RESULT: ASVD_BT_TYPE_HELPER_V054_USER_FRIENDLY_POSTFLASH_SMOKE_V2_DONE
+```
+
+The smoke must fail on Android `/system/bin/awk` syntax errors such as `non-terminated string`, `syntax error`, `illegal statement`, or `giving up`.
+<!-- v054-user-friendly-test-end -->

@@ -50,3 +50,26 @@ Symptom: `cgrun` hangs or exits with timeout after `pm path` or during `dumpsys 
 
 Fix: use a minimal check or one simple root shell. Avoid nested `tsu /system/bin/sh -c` quoting and avoid repeated `tsu` in pipelines.
 <!-- v053-dynamic-release-failures-end -->
+
+<!-- android-awk-exp-failure-start -->
+## Android `/system/bin/awk` compatibility in generated wizard output
+
+### Symptom
+
+The setup wizard fails during list formatting with errors such as:
+
+```text
+/system/bin/awk: non-terminated string
+/system/bin/awk: syntax error
+/system/bin/awk: illegal statement
+/system/bin/awk: giving up
+```
+
+### Root cause
+
+Generated helper scripts used Android awk-incompatible formatting, including multiline `printf` strings and the variable name `exp`, which can collide with awk functions/built-ins.
+
+### Fix
+
+Use single-line `printf` strings and avoid reserved/conflicting variable names such as `exp`; use explicit names like `expflag` instead. Smoke tests must hard-fail on awk syntax errors.
+<!-- android-awk-exp-failure-end -->

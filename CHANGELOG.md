@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.5.4 - 2026-05-12
+
+User-friendly UX and safety release.
+
+- Added `asvd.sh` as the central one-command menu.
+- Added `helper-doctor.sh` for support diagnostics.
+- Added `helper-update-info.sh` for local online-update metadata checks.
+- Added real dry-run support for setup, set-type, clear-type, and config apply flows.
+- Improved setup wizard wording, cancellation, duplicate-name hints, and redacted output.
+- Kept Bluetooth Java runtime behavior unchanged compared with v0.5.3.
+- Verified v0.5.4 post-flash smoke on the reference Pixel setup:
+  - wizard dry-run lists H222 and redacts MACs
+  - set-type dry-run reports `write_performed=no`
+  - clear dry-run reports `write_performed=no`
+  - H222 remains `metadata_17=Carkit`
+- Fixed Android `/system/bin/awk` compatibility issues in the setup wizard:
+  - multiline `printf` string issue
+  - reserved/conflicting variable name `exp`
+
 ## v0.5.3 - 2026-05-12
 
 Stable release adding Magisk online update metadata.
