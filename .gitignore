@@ -1,0 +1,10 @@
+*.apk
+*.zip
+*.sha256
+*.keystore
+*.idsig
+build/
+out/
+*.class
+*.dex
+.DS_Store
