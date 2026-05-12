@@ -23,3 +23,10 @@
 
 Decision: add `updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json` to `module.prop` and maintain repository `update.json` from `v0.5.3` onward. Reason: enable Magisk online updates without changing Bluetooth runtime behavior.
 <!-- v053-online-update-decision-end -->
+
+
+## v0.5.3 online update posture
+
+- `v0.5.3` is the first Magisk online-update capable release.
+- `updateJson` points to the repository root `update.json` on `main`.
+- Bluetooth runtime behavior remains unchanged from `v0.5.2`; H222 `Carkit` remains the verified reference state.

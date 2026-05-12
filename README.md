@@ -8,7 +8,7 @@ The verified use case is a Bluetooth receiver that Android classified as headpho
 
 | Area | Status |
 |---|---|
-| Latest release | `v0.5.2` |
+| Latest release | `v0.5.3` |
 | Runtime model | Magisk `priv-app` helper |
 | Normal app support | Not supported |
 | Root/Magisk required | Yes |
@@ -19,6 +19,7 @@ The verified use case is a Bluetooth receiver that Android classified as headpho
 | SET car/Carkit | Verified on the target above |
 | Wizard | Available, MAC-redacted by default |
 | Debug report | Available, safe for public GitHub/XDA paste by default |
+| Online update support | Enabled from `v0.5.3` via Magisk `updateJson` |
 | Speaker/headphones metadata | Implemented, still experimental until UI mapping is verified |
 | Other phones/OEMs | Unknown / tester feedback needed |
 

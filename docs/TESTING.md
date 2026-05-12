@@ -7,21 +7,22 @@
 - Magisk 30700 alpha
 - Target: H222 Bluetooth receiver
 
-## Verified release: v0.5.2
+## Verified release: v0.5.3
 
-Post-flash AIO verification passed on 2026-05-12.
+Post-flash online-update/runtime verification passed on 2026-05-12.
 
 Verified markers:
 
 ```text
-versionCode=52
-versionName=0.5.2
+versionCode=53
+versionName=0.5.3
 package:/system/priv-app/AsvdBtTypeHelper/AsvdBtTypeHelper.apk
 metadata_17_before=Carkit
 RESULT: ASVD_BT_TYPE_HELPER_GET_DONE
+updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json
 RESULT: ASVD_BT_TYPE_HELPER_DEBUG_DONE
 RESULT: ASVD_BT_TYPE_HELPER_DEBUG_FILE_WRITTEN
-RESULT: ASVD_BT_TYPE_HELPER_V052_POSTFLASH_MENU_DEBUG_AIO_DONE
+RESULT: ASVD_BT_TYPE_HELPER_V053_POSTFLASH_AIO_DONE
 ```
 
 ## Build and parse-test gate
@@ -29,16 +30,16 @@ RESULT: ASVD_BT_TYPE_HELPER_V052_POSTFLASH_MENU_DEBUG_AIO_DONE
 ```sh
 cgrun 'set -euo pipefail
 cd /storage/emulated/0/Download
-sha256sum -c build_asvd_bt_type_helper_privapp_v058.sh.sha256
-bash -n ./build_asvd_bt_type_helper_privapp_v058.sh
-chmod +x ./build_asvd_bt_type_helper_privapp_v058.sh
-bash ./build_asvd_bt_type_helper_privapp_v058.sh
-SRC="$HOME/asvd-bt-type-helper-v058/AsvdBtTypeHelper.apk"
-DST="/data/local/tmp/AsvdBtTypeHelper-v0.5.2.apk"
+sha256sum -c build_asvd_bt_type_helper_privapp_v059.sh.sha256
+bash -n ./build_asvd_bt_type_helper_privapp_v059.sh
+chmod +x ./build_asvd_bt_type_helper_privapp_v059.sh
+bash ./build_asvd_bt_type_helper_privapp_v059.sh
+SRC="$HOME/asvd-bt-type-helper-v059/AsvdBtTypeHelper.apk"
+DST="/data/local/tmp/AsvdBtTypeHelper-v0.5.3.apk"
 tsu /system/bin/cp "$SRC" "$DST"
 tsu /system/bin/chmod 0644 "$DST"
 tsu /system/bin/pm install -r -d "$DST"
-echo RESULT: ASVD_BT_TYPE_HELPER_V052_BUILD_PARSE_AIO_DONE
+echo RESULT: ASVD_BT_TYPE_HELPER_V053_BUILD_PARSE_AIO_DONE
 '
 ```
 
@@ -54,7 +55,7 @@ printf "q
 " | tsu /system/bin/sh "$MOD/helper-setup.sh"
 tsu /system/bin/sh "$MOD/helper-debug.sh" --name H222
 tsu /system/bin/sh "$MOD/helper-get.sh" --name H222
-echo RESULT: ASVD_BT_TYPE_HELPER_V052_POSTFLASH_MENU_DEBUG_AIO_DONE
+echo RESULT: ASVD_BT_TYPE_HELPER_V053_POSTFLASH_AIO_DONE
 '
 ```
 
