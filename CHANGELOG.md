@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.5.5 - 2026-05-13
+
+Stable release: Type Expansion + Restore Safety.
+
+- Added all known Android Bluetooth metadata key 17 device type values.
+- Added aliases for car, speaker, headset/headphones, untethered headset/TWS/earbuds, watch, stylus, hearing aid, default and clear.
+- Corrected `headphones` alias to write `Headset`.
+- Added backup-before-write support for confirmed SET/CLEAR flows.
+- Added `helper-restore-last.sh`.
+- Added `helper-compare-types.sh`.
+- Expanded setup wizard type menu.
+- Verified v0.5.5 postflash smoke v2 with H222 still `metadata_17=Carkit`.
+
+
 ## v0.5.4 - 2026-05-12
 
 User-friendly UX and safety release.

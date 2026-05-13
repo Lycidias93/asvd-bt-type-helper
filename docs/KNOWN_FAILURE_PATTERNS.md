@@ -73,3 +73,17 @@ Generated helper scripts used Android awk-incompatible formatting, including mul
 
 Use single-line `printf` strings and avoid reserved/conflicting variable names such as `exp`; use explicit names like `expflag` instead. Smoke tests must hard-fail on awk syntax errors.
 <!-- android-awk-exp-failure-end -->
+
+## 2026-05-13 · Android awk setup wizard newline regression
+
+### Symptom
+
+`helper-setup.sh --dry-run` fails in the paired-device list with Android `/system/bin/awk` syntax errors, while type dry-runs and final GET checks pass.
+
+### Root cause
+
+The generated setup wizard contained real newlines inside an awk `printf` string instead of escaped `\n` sequences.
+
+### Rule
+
+For Android `/system/bin/awk`, generated scripts must keep `printf` format strings single-line and use escaped `\n`. Smoke tests must hard-fail on `awk:`, `syntax error`, `non-terminated string`, and `giving up`.

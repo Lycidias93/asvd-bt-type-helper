@@ -41,3 +41,7 @@ No Bluetooth runtime behavior changed compared with v0.5.2; v0.5.3 adds Magisk o
 
 No Bluetooth Java runtime behavior changed compared with v0.5.3. The reference Pixel setup verified the new UX helpers, doctor, update info, and dry-run flows while H222 remained `metadata_17=Carkit`.
 <!-- v054-ux-compat-end -->
+
+## v0.5.5 metadata type expansion
+
+`Carkit` is verified on the reference H222 target. Other type values are implemented and dry-run verified, but require external UI feedback across OEM ROMs.

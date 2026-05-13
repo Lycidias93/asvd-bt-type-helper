@@ -36,3 +36,7 @@ Decision: add `updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-t
 
 Decision: publish v0.5.4 as a stable UX/safety release with `asvd.sh`, doctor, update info, and dry-run flows. Bluetooth Java runtime behavior remains unchanged from v0.5.3; H222 remains the verified Carkit reference target.
 <!-- decision-v054-ux-end -->
+
+## 2026-05-13 · v0.5.5 Type Expansion + Restore Safety
+
+Decision: add all known Android metadata key 17 type values and aliases, but keep only Carkit marked as verified. Non-Carkit values are experimental until external UI mapping is confirmed.

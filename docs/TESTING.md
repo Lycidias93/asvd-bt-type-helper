@@ -103,3 +103,14 @@ RESULT: ASVD_BT_TYPE_HELPER_V054_USER_FRIENDLY_POSTFLASH_SMOKE_V2_DONE
 
 The smoke must fail on Android `/system/bin/awk` syntax errors such as `non-terminated string`, `syntax error`, `illegal statement`, or `giving up`.
 <!-- v054-user-friendly-test-end -->
+
+## v0.5.5 postflash smoke
+
+Verified on 2026-05-13:
+
+- all metadata alias dry-runs mapped correctly
+- setup wizard dry-run completed without awk errors
+- compare-types completed
+- restore-last no-backup state handled as expected on fresh install
+- H222 remained `metadata_17=Carkit`
+- final smoke result: `RESULT: ASVD_BT_TYPE_HELPER_V055_TYPE_EXPANSION_SMOKE_V2_DONE`

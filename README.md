@@ -141,7 +141,7 @@ The Magisk module contains:
 updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json
 ```
 
-The repository root contains `update.json`, which points Magisk to the latest stable release ZIP and changelog. Magisk compares `versionCode`; `v0.5.3` uses `versionCode=53`.
+The repository root contains `update.json`, which points Magisk to the latest stable release ZIP and changelog. Magisk compares `versionCode`; `v0.5.3` uses `versionCode: `55`.
 <!-- online-update-support-end -->
 
 <!-- v054-user-friendly-ux-start -->
@@ -165,3 +165,35 @@ tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-clear-type.sh --
 
 Dry-run mode resolves the target and prints the planned action, but reports `write_performed=no` and does not change Bluetooth metadata.
 <!-- v054-user-friendly-ux-end -->
+
+
+## v0.5.5 type expansion
+
+v0.5.5 adds all known Android Bluetooth metadata key 17 values and aliases:
+
+```text
+default              -> Default
+watch                -> Watch
+untethered-headset   -> Untethered Headset
+earbuds / tws        -> Untethered Headset
+stylus / pen         -> Stylus
+speaker              -> Speaker
+headset / headphones -> Headset
+car / auto / carkit  -> Carkit
+hearingaid           -> HearingAid
+clear                -> clear metadata key 17
+```
+
+`Carkit` remains the verified reference type. Other metadata values are experimental until confirmed on more devices and OEM ROMs.
+
+Read-only type overview:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-compare-types.sh
+```
+
+Restore last saved backup, if a confirmed write created one:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-restore-last.sh --dry-run
+```

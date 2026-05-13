@@ -59,3 +59,15 @@
 - Avoid multiline `awk printf` strings in generated helper scripts.
 - Wizard smoke tests must hard-fail on `awk:`, `non-terminated string`, `syntax error`, `illegal statement`, or `giving up`.
 <!-- android-awk-compat-end -->
+
+## v0.5.5 release gate
+
+Before publishing a type-expansion build:
+
+1. Build and parse-test the ZIP.
+2. Flash and reboot.
+3. Run the postflash smoke.
+4. Require all metadata alias dry-runs to map to expected values.
+5. Require setup wizard dry-run to have no awk/syntax errors.
+6. Require H222 to remain `metadata_17=Carkit`.
+7. Treat `restore-last` no-backup on fresh install as an expected non-blocking state when explicitly checked.
