@@ -114,3 +114,25 @@ Verified on 2026-05-13:
 - restore-last no-backup state handled as expected on fresh install
 - H222 remained `metadata_17=Carkit`
 - final smoke result: `RESULT: ASVD_BT_TYPE_HELPER_V055_TYPE_EXPANSION_SMOKE_V2_DONE`
+
+<!-- V056_SHARED_STATE_TEST_START -->
+## v0.5.6 shared-state smoke
+
+Reference smoke passed with:
+
+```text
+RESULT: ASVD_BT_TYPE_HELPER_V056_SHARED_STATE_SMOKE_DONE
+RESULT: ASVD_BT_TYPE_HELPER_V056_POSTFLASH_SMOKE_AIO_DONE
+RESULT: AUDIO_SAFE_VOLUME_VERIFY_PASS
+```
+
+Required checks:
+
+- `helper_version=0.5.6`
+- `helper_versionCode=56`
+- `target_name=H222`
+- `requested_type=Carkit`
+- `last_result=PASS`
+- no raw Bluetooth MAC address in `/data/adb/asvd/bt-helper.env`
+- ASVD v1.2.6 verify detects state file as present
+<!-- V056_SHARED_STATE_TEST_END -->

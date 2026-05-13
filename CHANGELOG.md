@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.5.6 - 2026-05-13
+
+- Added sanitized ASVD companion shared-state file at `/data/adb/asvd/bt-helper.env`.
+- Added atomic state writes via temporary file and rename.
+- Added helper version/package/target/requested type/last result fields for ASVD v1.2.6 verify reports.
+- Kept raw Bluetooth MAC addresses out of shared state and public output.
+- Added explicit opt-in `--asvd-apply-now`; no automatic ASVD run by default.
+- Kept Bluetooth metadata/API workflow only; no GMS-disable/offline-UI mode and no `bt_config.conf` patching.
+- Verified H222 remains `metadata_17=Carkit` and ASVD v1.2.6 verify reports companion state.
+
 ## v0.5.5 - 2026-05-13
 
 Stable release: Type Expansion + Restore Safety.

@@ -40,3 +40,18 @@ Decision: publish v0.5.4 as a stable UX/safety release with `asvd.sh`, doctor, u
 ## 2026-05-13 · v0.5.5 Type Expansion + Restore Safety
 
 Decision: add all known Android metadata key 17 type values and aliases, but keep only Carkit marked as verified. Non-Carkit values are experimental until external UI mapping is confirmed.
+
+<!-- V056_DECISION_SHARED_STATE_START -->
+## 2026-05-13 · Ship shared-state companion integration, reject UI/GMS paths
+
+Decision for `v0.5.6`:
+
+- ship ASVD companion shared-state file `/data/adb/asvd/bt-helper.env`
+- keep Bluetooth metadata/API approach
+- reject GMS-disable/offline-UI helper path
+- reject direct `/data/misc/bluedroid/bt_config.conf` patching
+- reject boot automation for Bluetooth type changes
+- keep ASVD apply-now opt-in only
+
+Reason: previous UI unlock/offline tests caused unwanted Google account / billing context side effects and did not reliably unlock the Pixel Bluetooth type UI.
+<!-- V056_DECISION_SHARED_STATE_END -->

@@ -87,3 +87,14 @@ The generated setup wizard contained real newlines inside an awk `printf` string
 ### Rule
 
 For Android `/system/bin/awk`, generated scripts must keep `printf` format strings single-line and use escaped `\n`. Smoke tests must hard-fail on `awk:`, `syntax error`, `non-terminated string`, and `giving up`.
+
+<!-- V056_KFP_SHARED_STATE_START -->
+## v0.5.6 shared-state failure patterns
+
+Known checks before release:
+
+- State file absent after action means ASVD v1.2.6 can only report package/version, not target state.
+- A raw Bluetooth MAC in `/data/adb/asvd/bt-helper.env` is a privacy failure.
+- `--asvd-apply-now` must remain explicit; automatic ASVD triggering is not default behavior.
+- GMS-disable/offline-UI and `bt_config.conf` patch approaches are rejected and must not be reintroduced.
+<!-- V056_KFP_SHARED_STATE_END -->

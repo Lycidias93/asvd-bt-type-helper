@@ -71,3 +71,25 @@ Before publishing a type-expansion build:
 5. Require setup wizard dry-run to have no awk/syntax errors.
 6. Require H222 to remain `metadata_17=Carkit`.
 7. Treat `restore-last` no-backup on fresh install as an expected non-blocking state when explicitly checked.
+
+<!-- V056_SHARED_STATE_WORKFLOW_START -->
+## v0.5.6 ASVD shared-state workflow
+
+`v0.5.6` writes a sanitized companion state file for ASVD v1.2.6+ at:
+
+```text
+/data/adb/asvd/bt-helper.env
+```
+
+Rules:
+
+- create `/data/adb/asvd` if missing
+- write through `.tmp` then atomic `mv`
+- state file mode `0644`
+- directory mode `0755`
+- no raw Bluetooth MAC address in state or public logs
+- no GMS-disable/offline-UI mode
+- no `/data/misc/bluedroid/bt_config.conf` patching
+- no boot automation for Bluetooth type changes
+- ASVD apply-now only with explicit `--asvd-apply-now`
+<!-- V056_SHARED_STATE_WORKFLOW_END -->

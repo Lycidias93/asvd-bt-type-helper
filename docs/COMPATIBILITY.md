@@ -45,3 +45,21 @@ No Bluetooth Java runtime behavior changed compared with v0.5.3. The reference P
 ## v0.5.5 metadata type expansion
 
 `Carkit` is verified on the reference H222 target. Other type values are implemented and dry-run verified, but require external UI feedback across OEM ROMs.
+
+<!-- V056_COMPATIBILITY_STATE_START -->
+## v0.5.6 compatibility note
+
+Verified on Pixel 10 Pro XL / Android 16 / SDK 36 / Magisk with H222.
+
+ASVD v1.2.6 companion detection verified:
+
+```text
+bt_helper_status = present
+bt_helper_package = org.asvd.bttypehelper
+bt_helper_version = 0.5.6
+bt_helper_versionCode = 56
+bt_helper_state_file = present
+bt_helper_requested_type = Carkit
+bt_helper_last_result = PASS
+```
+<!-- V056_COMPATIBILITY_STATE_END -->
