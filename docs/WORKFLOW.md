@@ -93,3 +93,9 @@ Rules:
 - no boot automation for Bluetooth type changes
 - ASVD apply-now only with explicit `--asvd-apply-now`
 <!-- V056_SHARED_STATE_WORKFLOW_END -->
+
+<!-- workflow-v057-action-report-start -->
+## v0.5.7 Action Button workflow
+
+The Magisk Action Button is read-only. It may generate a support report, collect doctor output, compare metadata types, and show current/last Bluetooth device hints. It must not perform metadata SET/CLEAR, Bluetooth reload, ASVD apply-now, GMS/offline-UI changes, or `bt_config.conf` patching.
+<!-- workflow-v057-action-report-end -->

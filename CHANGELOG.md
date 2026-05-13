@@ -151,3 +151,13 @@ Stable release.
 ## v0.4.x earlier
 
 - Research builds for on-device APK packaging, manual binary AndroidManifest generation, privileged permission allowlist, and Bluetooth metadata access.
+
+## v0.5.7 - Action Button and current/last Bluetooth device views
+
+- Added Magisk Action Button support via `action.sh`.
+- Added read-only Action Button report to Download.
+- Added `helper-connected-devices.sh`.
+- Added `helper-last-devices.sh` for last connected and last devices summaries.
+- Added main-menu entries for currently connected devices, last connected hints, and last devices summary.
+- Improved MAC and partial-MAC redaction for Android dumpsys output.
+- Confirmed H222 remains `metadata_17=Carkit` after smoke.

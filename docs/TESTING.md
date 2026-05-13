@@ -136,3 +136,18 @@ Required checks:
 - no raw Bluetooth MAC address in `/data/adb/asvd/bt-helper.env`
 - ASVD v1.2.6 verify detects state file as present
 <!-- V056_SHARED_STATE_TEST_END -->
+
+<!-- testing-v057-action-current-last-start -->
+## v0.5.7 smoke coverage
+
+The v0.5.7 smoke verifies:
+
+- package and receiver version `0.5.7` / versionCode `57`
+- currently connected device helper result marker
+- last connected helper result marker
+- last devices helper result marker
+- Action Button report creation
+- no raw or partially masked Bluetooth MAC leaks
+- doctor PASS
+- H222 remains `metadata_17=Carkit`
+<!-- testing-v057-action-current-last-end -->

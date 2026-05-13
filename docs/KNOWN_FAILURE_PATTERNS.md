@@ -98,3 +98,9 @@ Known checks before release:
 - `--asvd-apply-now` must remain explicit; automatic ASVD triggering is not default behavior.
 - GMS-disable/offline-UI and `bt_config.conf` patch approaches are rejected and must not be reintroduced.
 <!-- V056_KFP_SHARED_STATE_END -->
+
+<!-- kfp-v057-partial-mac-redaction-start -->
+## v0.5.7 / partial Bluetooth address redaction
+
+Android dumpsys may emit partially masked Bluetooth addresses such as `XX:XX:XX:XX:47:5C`. Treat those as sensitive and redact them like full MAC addresses. Smoke must scan current, last-device, and Action Button reports for both full and partially masked addresses.
+<!-- kfp-v057-partial-mac-redaction-end -->

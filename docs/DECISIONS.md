@@ -55,3 +55,9 @@ Decision for `v0.5.6`:
 
 Reason: previous UI unlock/offline tests caused unwanted Google account / billing context side effects and did not reliably unlock the Pixel Bluetooth type UI.
 <!-- V056_DECISION_SHARED_STATE_END -->
+
+<!-- decision-v057-action-readonly-start -->
+## Decision: Magisk Action Button remains read-only
+
+For v0.5.7, the Magisk Action Button generates a support/status report only. It must not perform metadata SET/CLEAR, Bluetooth reload, ASVD apply-now, GMS/offline-UI changes, or direct `bt_config.conf` patching.
+<!-- decision-v057-action-readonly-end -->

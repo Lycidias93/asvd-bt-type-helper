@@ -63,3 +63,15 @@ bt_helper_requested_type = Carkit
 bt_helper_last_result = PASS
 ```
 <!-- V056_COMPATIBILITY_STATE_END -->
+
+<!-- compat-v057-pixel10-action-start -->
+## v0.5.7 reference compatibility
+
+Verified on Pixel 10 Pro XL / Android 16 / Magisk:
+
+- Action Button report: PASS
+- currently connected Bluetooth hints: PASS / best-effort
+- last connected Bluetooth hints: PASS / best-effort
+- last devices summary: PASS / best-effort
+- H222 remains `metadata_17=Carkit`
+<!-- compat-v057-pixel10-action-end -->

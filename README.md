@@ -8,7 +8,7 @@ The verified use case is a Bluetooth receiver that Android classified as headpho
 
 | Area | Status |
 |---|---|
-| Latest release | `v0.5.6` |
+| Latest release | `v0.5.7` |
 | Runtime model | Magisk `priv-app` helper |
 | Package | `org.asvd.bttypehelper` |
 | Version / versionCode | `0.5.6` / `56` |
@@ -208,7 +208,7 @@ The Magisk module contains:
 updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json
 ```
 
-The repository root contains `update.json`, which points Magisk to the latest stable release ZIP and changelog. Magisk compares `versionCode`; `v0.5.6` uses `versionCode: 56`.
+The repository root contains `update.json`, which points Magisk to the latest stable release ZIP and changelog. Magisk compares `versionCode`; `v0.5.7` uses `versionCode: 57`.
 
 ## Safety
 
@@ -223,3 +223,26 @@ See [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md).
 ## Testing and release workflow
 
 See [`docs/TESTING.md`](docs/TESTING.md) and [`docs/WORKFLOW.md`](docs/WORKFLOW.md).
+
+<!-- v057-action-current-last-devices-start -->
+## v0.5.7 Action Button and Bluetooth device views
+
+`v0.5.7` adds read-only diagnostics and support helpers:
+
+- Magisk Action Button support via `action.sh`.
+- Action Button report written to the Download folder.
+- Currently connected Bluetooth device hints.
+- Last connected Bluetooth hints.
+- Last devices summary.
+- Improved redaction for raw and partially masked Bluetooth addresses.
+
+Run from a root shell:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-connected-devices.sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-last-devices.sh --last-connected
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-last-devices.sh --last-devices
+```
+
+The Action Button is read-only. It does not set metadata, clear metadata, restart Bluetooth, or trigger ASVD apply-now by default.
+<!-- v057-action-current-last-devices-end -->
