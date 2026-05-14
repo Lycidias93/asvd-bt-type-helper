@@ -1,5 +1,45 @@
 # Changelog
 
+## v0.5.9 - 2026-05-14
+
+- Added improved duplicate-safe picker UX.
+- Added `candidate_id`, `source_index`, `last_connected`, `dev_type`, `dev_class`, and `likely_current_media` display fields.
+- Stored duplicate-picker metadata in `picked-device.env`.
+- Updated picked-device dry-run output to show selected candidate context before writing.
+- Preserved MAC redaction by default.
+- Kept duplicate-name writes guarded and non-guessing.
+- Skipped unreleased v0.5.8 as an internal test build.
+
+## v0.5.9 - 2026-05-14
+
+- Added improved duplicate-safe picker UX.
+- Added `candidate_id`, `source_index`, `last_connected`, `dev_type`, `dev_class`, and `likely_current_media` display fields.
+- Stored duplicate-picker metadata in `picked-device.env`.
+- Updated picked-device dry-run output to show selected candidate context before writing.
+- Preserved MAC redaction by default.
+- Kept duplicate-name writes guarded and non-guessing.
+- Skipped unreleased v0.5.8 as an internal test build.
+
+## v0.5.9 - 2026-05-14
+
+- Added improved duplicate-safe picker UX.
+- Added `candidate_id`, `source_index`, `last_connected`, `dev_type`, `dev_class`, and `likely_current_media` display fields.
+- Stored duplicate-picker metadata in `picked-device.env`.
+- Updated picked-device dry-run output to show selected candidate context before writing.
+- Preserved MAC redaction by default.
+- Kept duplicate-name writes guarded and non-guessing.
+- Skipped unreleased v0.5.8 as an internal test build.
+
+## v0.5.9 - 2026-05-14
+
+- Added improved duplicate-safe picker UX.
+- Added `candidate_id`, `source_index`, `last_connected`, `dev_type`, `dev_class`, and `likely_current_media` display fields.
+- Stored duplicate-picker metadata in `picked-device.env`.
+- Updated picked-device dry-run output to show selected candidate context before writing.
+- Preserved MAC redaction by default.
+- Kept duplicate-name writes guarded and non-guessing.
+- Skipped unreleased v0.5.8 as an internal test build.
+
 ## v0.5.6 - 2026-05-13
 
 - Added sanitized ASVD companion shared-state file at `/data/adb/asvd/bt-helper.env`.

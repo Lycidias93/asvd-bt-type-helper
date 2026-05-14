@@ -151,3 +151,14 @@ The v0.5.7 smoke verifies:
 - doctor PASS
 - H222 remains `metadata_17=Carkit`
 <!-- testing-v057-action-current-last-end -->
+
+<!-- ASVD_BT_HELPER_V059_TESTING_START -->
+## 2026-05-14 · v0.5.9 duplicate picker UX smoke
+
+Verified gates:
+- package version `0.5.9` / `59`
+- duplicate picker shows candidate metadata
+- duplicate-name dry-run aborts instead of false success
+- picked-device speaker dry-run succeeds without metadata write
+- H222 remains Carkit
+<!-- ASVD_BT_HELPER_V059_TESTING_END -->

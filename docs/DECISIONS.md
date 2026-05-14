@@ -61,3 +61,9 @@ Reason: previous UI unlock/offline tests caused unwanted Google account / billin
 
 For v0.5.7, the Magisk Action Button generates a support/status report only. It must not perform metadata SET/CLEAR, Bluetooth reload, ASVD apply-now, GMS/offline-UI changes, or direct `bt_config.conf` patching.
 <!-- decision-v057-action-readonly-end -->
+
+<!-- ASVD_BT_HELPER_V059_DECISION_START -->
+## 2026-05-14 · Do not guess duplicate devices
+
+Decision: duplicate devices must not be selected by backend name. If candidates cannot be distinguished, the helper must keep the user in dry-run/pick flow rather than confirming a write.
+<!-- ASVD_BT_HELPER_V059_DECISION_END -->

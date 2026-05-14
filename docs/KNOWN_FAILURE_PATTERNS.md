@@ -104,3 +104,11 @@ Known checks before release:
 
 Android dumpsys may emit partially masked Bluetooth addresses such as `XX:XX:XX:XX:47:5C`. Treat those as sensitive and redact them like full MAC addresses. Smoke must scan current, last-device, and Action Button reports for both full and partially masked addresses.
 <!-- kfp-v057-partial-mac-redaction-end -->
+
+<!-- ASVD_BT_HELPER_V059_KFP_START -->
+## 2026-05-14 · Android UI alias not available in Bluetooth backend
+
+Symptom: Android UI shows a renamed device, but `bt_config.conf` and Bluetooth dumpsys still show duplicated backend names.
+
+Mitigation: use duplicate-safe picker metadata; do not assume the UI alias can be found or mapped automatically.
+<!-- ASVD_BT_HELPER_V059_KFP_END -->

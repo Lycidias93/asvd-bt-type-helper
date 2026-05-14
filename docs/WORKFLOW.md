@@ -99,3 +99,11 @@ Rules:
 
 The Magisk Action Button is read-only. It may generate a support report, collect doctor output, compare metadata types, and show current/last Bluetooth device hints. It must not perform metadata SET/CLEAR, Bluetooth reload, ASVD apply-now, GMS/offline-UI changes, or `bt_config.conf` patching.
 <!-- workflow-v057-action-report-end -->
+
+<!-- ASVD_BT_HELPER_V059_WORKFLOW_START -->
+## 2026-05-14 · v0.5.9 duplicate-safe picker workflow
+
+When multiple paired devices share the same backend name, do not write by name. Use the duplicate-safe picker, inspect candidate metadata, run dry-run, then confirm only when the selected candidate is clear.
+
+The Android UI name may differ from `backend_name`; for example, a UI alias may not be visible in `bt_config.conf` or Bluetooth dumpsys output.
+<!-- ASVD_BT_HELPER_V059_WORKFLOW_END -->

@@ -75,3 +75,9 @@ Verified on Pixel 10 Pro XL / Android 16 / Magisk:
 - last devices summary: PASS / best-effort
 - H222 remains `metadata_17=Carkit`
 <!-- compat-v057-pixel10-action-end -->
+
+<!-- ASVD_BT_HELPER_V059_COMPAT_START -->
+## 2026-05-14 · Duplicate backend names
+
+Android may expose two physical devices with the same Bluetooth backend name even when the UI shows a custom friendly name. v0.5.9 does not assume the UI alias can be resolved; it exposes safe picker metadata instead.
+<!-- ASVD_BT_HELPER_V059_COMPAT_END -->

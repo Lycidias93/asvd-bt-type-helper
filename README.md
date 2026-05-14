@@ -108,7 +108,7 @@ tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --na
 If a display name is duplicated, use MAC targeting locally:
 
 ```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --mac AA:BB:CC:DD:EE:FF --type car --confirm-set
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --mac <BT_MAC> --type car --confirm-set
 ```
 
 Do not post real MAC addresses publicly.
@@ -246,3 +246,21 @@ tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-last-devices.sh 
 
 The Action Button is read-only. It does not set metadata, clear metadata, restart Bluetooth, or trigger ASVD apply-now by default.
 <!-- v057-action-current-last-devices-end -->
+
+<!-- ASVD_BT_HELPER_CURRENT_RELEASE_START -->
+## Current stable release
+
+Current stable release: **v0.5.9** (`versionCode=59`).
+
+v0.5.9 focuses on safer duplicate-device selection. This is especially useful when Android shows a friendly UI name, while the Bluetooth backend still exposes two identical device names.
+
+Use the duplicate-safe picker instead of setting duplicate devices by name:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-pick-device.sh --filter "Tribit XSound Go"
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-picked.sh --type speaker --dry-run
+```
+
+Only confirm after the selected candidate is clearly correct.
+
+<!-- ASVD_BT_HELPER_CURRENT_RELEASE_END -->
