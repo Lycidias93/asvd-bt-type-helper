@@ -1,5 +1,15 @@
 # ASVD BT Type Helper
 
+<!-- ASVD_BT_HELPER_ORIGIN_COMPANION_START -->
+## Origin / companion module
+
+ASVD BT Type Helper started as a companion idea for my [Audio Safe Volume Disabler / ASVD](https://github.com/Lycidias93/audio-safe-volume-battery-aware) module.
+
+ASVD handles safe-volume / Sound Dose behavior. While working on that, I needed a reliable way to mark my Bluetooth receiver as a car device on Android, because the normal Bluetooth device type setting was visible but greyed out on my Pixel.
+
+That Bluetooth device-type part became this separate helper module: ASVD BT Type Helper.
+<!-- ASVD_BT_HELPER_ORIGIN_COMPANION_END -->
+
 ## What this module is
 
 ASVD BT Type Helper is a **Magisk / priv-app helper** for changing Android Bluetooth device type metadata.
