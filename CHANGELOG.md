@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.6.1 - 2026-05-16
+
+- Fixed Pixel/Termux root-shell broadcast failures by detaching `am broadcast` from the Termux PTY.
+- Avoided direct framework command output to `/dev/pts/0` in helper preflights where helper-common is available.
+- Hardened `helper-get.sh` with `request_id` polling and strict GET result validation.
+- Fixed false-positive GET wrapper success when no fresh result file exists.
+- Hardened `helper-doctor.sh` so GET smoke failures count as failures.
+- No Bluetooth metadata write behavior changed.
+
 ## v0.6.0 - 2026-05-16
 
 - Fixed setup wizard stale result handling where a `GET` result file could be parsed as `LIST` output, causing false `no_devices_parsed`.

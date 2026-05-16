@@ -31,10 +31,10 @@ The verified use case is a Bluetooth receiver that Android classified as headpho
 
 | Area | Status |
 |---|---|
-| Latest release | `v0.6.0` |
+| Latest release | `v0.6.1` |
 | Runtime model | Magisk `priv-app` helper |
 | Package | `org.asvd.bttypehelper` |
-| Version / versionCode | `0.6.0` / `60` |
+| Version / versionCode | `0.6.1` / `61` |
 | Normal app support | Not supported |
 | Root/Magisk required | Yes |
 | Verified phone | Pixel 10 Pro XL / Android 16 / SDK 36 |
@@ -273,7 +273,7 @@ The Action Button is read-only. It does not set metadata, clear metadata, restar
 <!-- ASVD_BT_HELPER_CURRENT_RELEASE_START -->
 ## Current stable release
 
-Current stable release: **v0.6.0** (`versionCode=60`).
+Current stable release: **v0.6.1** (`versionCode=61`).
 
 v0.6.0 is a Wizard/Result robustness release. It fixes stale/wrong result handling where a setup LIST request could accidentally parse an older GET result and report a false `no_devices_parsed`.
 
@@ -295,3 +295,19 @@ H222 does not need another metadata write when it already shows:
 metadata_17=Carkit
 ```
 <!-- ASVD_BT_HELPER_CURRENT_RELEASE_END -->
+
+<!-- ASVD_BT_HELPER_V061_START -->
+## v0.6.1 FD-detach and GET hardening
+
+`v0.6.1` fixes the Pixel/Termux root-shell broadcast path observed with Magisk/Android 16 where `am broadcast` can fail before the receiver is invoked because `system_server` is denied access to the Termux PTY (`/dev/pts/0`).
+
+Changes:
+
+- `am broadcast` is now run detached from the Termux PTY (`stdin/stdout/stderr` redirected away from devpts).
+- `pm path` preflight output in helper wrappers is captured before printing, avoiding direct framework writes to the Termux PTY.
+- `helper-get.sh` now uses `request_id` polling and strict GET result validation.
+- `helper-get.sh` returns failure if no fresh GET result exists; it no longer reports success with missing result files.
+- `helper-doctor.sh` treats GET wrapper failures as real failures.
+
+No Bluetooth metadata is written by LIST/GET/Doctor flows.
+<!-- ASVD_BT_HELPER_V061_END -->
