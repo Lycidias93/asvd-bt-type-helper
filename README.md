@@ -336,7 +336,6 @@ Additional docs:
 
 - [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md)
 - [`docs/TESTING.md`](docs/TESTING.md)
-- [`docs/WORKFLOW.md`](docs/WORKFLOW.md)
 
 Related module:
 
