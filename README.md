@@ -1,5 +1,28 @@
 # ASVD BT Type Helper
 
+## v0.6.0 Wizard/Result robustness
+
+`v0.6.0` fixes the setup Wizard race/stale-result failure mode.
+
+Before this release, the Wizard could request `LIST` but still consume an existing `last-result.txt` from a previous `GET`, producing a false `no_devices_parsed` even though Bluetooth and metadata access were working.
+
+The Wizard now validates result provenance before parsing devices:
+
+```text
+action=org.asvd.bttypehelper.LIST
+RESULT: ASVD_BT_TYPE_HELPER_LIST_DONE
+request_id=<matching request>
+```
+
+If it sees a wrong or stale result, it fails explicitly:
+
+```text
+FAIL stale_or_wrong_result action=GET expected=LIST
+```
+
+This release does not add APK root, a root broker, automatic Bluetooth changes, or new metadata write behavior.
+
+
 ASVD BT Type Helper is a Magisk/priv-app helper for changing Android Bluetooth device type metadata.
 
 The verified use case is a Bluetooth receiver that Android classified as headphones while the Pixel Bluetooth device type setting was visible but greyed out and not manually changeable. The helper can set Android Bluetooth metadata key `17` to `Carkit`, which made the receiver show as **Car/Auto** in Android Bluetooth settings on the verified reference device.
@@ -8,16 +31,16 @@ The verified use case is a Bluetooth receiver that Android classified as headpho
 
 | Area | Status |
 |---|---|
-| Latest release | `v0.5.7` |
+| Latest release | `v0.6.0` |
 | Runtime model | Magisk `priv-app` helper |
 | Package | `org.asvd.bttypehelper` |
-| Version / versionCode | `0.5.6` / `56` |
+| Version / versionCode | `0.6.0` / `60` |
 | Normal app support | Not supported |
 | Root/Magisk required | Yes |
 | Verified phone | Pixel 10 Pro XL / Android 16 / SDK 36 |
 | Verified target | `H222` Bluetooth receiver |
 | Verified connected-car state | Yes, `metadata_17=Carkit` while H222 is connected |
-| ASVD companion state | Writes `/data/adb/asvd/bt-helper.env` from `v0.5.6` |
+| ASVD companion state | Writes `/data/adb/asvd/bt-helper.env`; v0.6.0 adds LIST health fields |
 | Online update support | Enabled via Magisk `updateJson` |
 | Non-Carkit metadata values | Implemented, experimental until UI mapping is verified |
 | Other phones/OEMs | Unknown / tester feedback needed |
@@ -128,7 +151,7 @@ RESULT: ASVD_BT_TYPE_HELPER_GET_DONE
 
 ## ASVD companion shared state
 
-From `v0.5.6`, the helper writes sanitized shared state for ASVD v1.2.6+:
+The helper writes sanitized shared state for ASVD v1.2.6+:
 
 ```text
 /data/adb/asvd/bt-helper.env
@@ -139,8 +162,8 @@ Example state:
 ```text
 helper_present=1
 helper_package=org.asvd.bttypehelper
-helper_version=0.5.6
-helper_versionCode=56
+helper_version=0.6.0
+helper_versionCode=60
 target_name=H222
 requested_type=Carkit
 last_result=PASS
@@ -208,7 +231,7 @@ The Magisk module contains:
 updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json
 ```
 
-The repository root contains `update.json`, which points Magisk to the latest stable release ZIP and changelog. Magisk compares `versionCode`; `v0.5.7` uses `versionCode: 57`.
+The repository root contains `update.json`, which points Magisk to the latest stable release ZIP and changelog. Magisk compares `versionCode`; `v0.6.0` uses `versionCode: 60`.
 
 ## Safety
 
@@ -250,17 +273,25 @@ The Action Button is read-only. It does not set metadata, clear metadata, restar
 <!-- ASVD_BT_HELPER_CURRENT_RELEASE_START -->
 ## Current stable release
 
-Current stable release: **v0.5.9** (`versionCode=59`).
+Current stable release: **v0.6.0** (`versionCode=60`).
 
-v0.5.9 focuses on safer duplicate-device selection. This is especially useful when Android shows a friendly UI name, while the Bluetooth backend still exposes two identical device names.
+v0.6.0 is a Wizard/Result robustness release. It fixes stale/wrong result handling where a setup LIST request could accidentally parse an older GET result and report a false `no_devices_parsed`.
 
-Use the duplicate-safe picker instead of setting duplicate devices by name:
+Key runtime changes:
 
-```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-pick-device.sh --filter "Tribit XSound Go"
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-picked.sh --type speaker --dry-run
+- Adds `request_id` to helper broadcasts and result files.
+- Setup Wizard accepts only matching LIST results.
+- LIST validation requires:
+  - `action=org.asvd.bttypehelper.LIST`
+  - `RESULT: ASVD_BT_TYPE_HELPER_LIST_DONE`
+  - at least one `-- device` block
+- Replaces fixed 2-second LIST waits with short polling.
+- Adds explicit failure output such as `FAIL stale_or_wrong_result action=GET expected=LIST`.
+- Extends `helper-doctor.sh` with LIST parse / Wizard smoke.
+
+H222 does not need another metadata write when it already shows:
+
+```text
+metadata_17=Carkit
 ```
-
-Only confirm after the selected candidate is clearly correct.
-
 <!-- ASVD_BT_HELPER_CURRENT_RELEASE_END -->

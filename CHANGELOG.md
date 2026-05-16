@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.6.0 - 2026-05-16
+
+- Fixed setup wizard stale result handling where a `GET` result file could be parsed as `LIST` output, causing false `no_devices_parsed`.
+- Added `request_id` to helper broadcasts and result files.
+- Added strict LIST result validation for Wizard/List flows:
+  - expected action is `org.asvd.bttypehelper.LIST`
+  - expected marker is `RESULT: ASVD_BT_TYPE_HELPER_LIST_DONE`
+  - at least one `-- device` block must be present
+- Replaced fixed 2-second LIST sleeps with short polling for the matching result file.
+- Added clearer failure output with `action`, `expected`, `device_blocks`, and `bonded_count_seen`.
+- Extended `helper-doctor.sh` with LIST parse / Wizard smoke.
+- Kept metadata write behavior unchanged; H222 remains correct when `metadata_17=Carkit`.
+- Kept root out of the APK; no root broker or automatic Bluetooth metadata writes were added.
+
+
 ## v0.5.9 - 2026-05-14
 
 - Added improved duplicate-safe picker UX.
