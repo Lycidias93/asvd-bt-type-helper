@@ -1,26 +1,16 @@
 # ASVD BT Type Helper
 
-<!-- ASVD_BT_HELPER_ORIGIN_COMPANION_START -->
-## Origin / companion module
-
-ASVD BT Type Helper started as a companion idea for my [Audio Safe Volume Disabler / ASVD](https://github.com/Lycidias93/audio-safe-volume-battery-aware) module.
-
-ASVD handles safe-volume / Sound Dose behavior. While working on that, I needed a reliable way to mark my Bluetooth receiver as a car device on Android, because the normal Bluetooth device type setting was visible but greyed out on my Pixel.
-
-That Bluetooth device-type part became this separate helper module: ASVD BT Type Helper.
-<!-- ASVD_BT_HELPER_ORIGIN_COMPANION_END -->
-
-## What this module is
+<!-- ASVD_BT_HELPER_INTRO_START -->
+## What it is and why it exists
 
 ASVD BT Type Helper is a **Magisk / priv-app helper** for changing Android Bluetooth device type metadata.
 
-It can list paired Bluetooth devices, read Android Bluetooth metadata key `17`, and set that metadata value for one explicitly selected Bluetooth device. The main verified use case is setting a Bluetooth receiver to `Carkit`, so Android treats it as a car / auto device instead of a headphone-like device.
+It started while I was working on my [Audio Safe Volume Disabler / ASVD](https://github.com/Lycidias93/audio-safe-volume-battery-aware) module. ASVD handles safe-volume / Sound Dose behavior; this helper covers the Bluetooth device-type part I needed during that work.
 
-## Why I made it
+My Pixel detected a Bluetooth receiver as a headphone-like device. Android Settings showed the device type option, but it was greyed out and not manually changeable. On my reference setup, setting Android Bluetooth metadata key `17` to `Carkit` made the receiver show up as **Car / Auto**.
 
-My Pixel detected a Bluetooth receiver as a headphone-like device. Android Settings showed the Bluetooth device type option, but it was greyed out and could not be changed manually.
-
-On my reference setup, setting metadata key `17` to `Carkit` made the receiver show up as **Car / Auto** in Android Bluetooth settings.
+The helper can list paired Bluetooth devices, read metadata key `17`, and set it for one explicitly selected device. The main verified use case is `Carkit`; other metadata values are implemented but still need feedback from other devices and ROMs.
+<!-- ASVD_BT_HELPER_INTRO_END -->
 
 ## Current status
 
