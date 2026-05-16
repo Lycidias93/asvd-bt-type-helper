@@ -1,100 +1,125 @@
 # ASVD BT Type Helper
 
-## v0.6.0 Wizard/Result robustness
+## What this module is
 
-`v0.6.0` fixes the setup Wizard race/stale-result failure mode.
+ASVD BT Type Helper is a **Magisk / priv-app helper** for changing Android Bluetooth device type metadata.
 
-Before this release, the Wizard could request `LIST` but still consume an existing `last-result.txt` from a previous `GET`, producing a false `no_devices_parsed` even though Bluetooth and metadata access were working.
+It can list paired Bluetooth devices, read Android Bluetooth metadata key `17`, and set that metadata value for one explicitly selected Bluetooth device. The main verified use case is setting a Bluetooth receiver to `Carkit`, so Android treats it as a car / auto device instead of a headphone-like device.
 
-The Wizard now validates result provenance before parsing devices:
+## Why I made it
 
-```text
-action=org.asvd.bttypehelper.LIST
-RESULT: ASVD_BT_TYPE_HELPER_LIST_DONE
-request_id=<matching request>
-```
+My Pixel detected a Bluetooth receiver as a headphone-like device. Android Settings showed the Bluetooth device type option, but it was greyed out and could not be changed manually.
 
-If it sees a wrong or stale result, it fails explicitly:
-
-```text
-FAIL stale_or_wrong_result action=GET expected=LIST
-```
-
-This release does not add APK root, a root broker, automatic Bluetooth changes, or new metadata write behavior.
-
-
-ASVD BT Type Helper is a Magisk/priv-app helper for changing Android Bluetooth device type metadata.
-
-The verified use case is a Bluetooth receiver that Android classified as headphones while the Pixel Bluetooth device type setting was visible but greyed out and not manually changeable. The helper can set Android Bluetooth metadata key `17` to `Carkit`, which made the receiver show as **Car/Auto** in Android Bluetooth settings on the verified reference device.
+On my reference setup, setting metadata key `17` to `Carkit` made the receiver show up as **Car / Auto** in Android Bluetooth settings.
 
 ## Current status
 
 | Area | Status |
 |---|---|
-| Latest release | `v0.6.1` |
-| Runtime model | Magisk `priv-app` helper |
-| Package | `org.asvd.bttypehelper` |
+| Current stable release | `v0.6.1` |
 | Version / versionCode | `0.6.1` / `61` |
-| Normal app support | Not supported |
-| Root/Magisk required | Yes |
+| Runtime model | Magisk module with privileged helper APK |
+| Package | `org.asvd.bttypehelper` |
+| Normal APK install | Not supported |
+| Root / Magisk required | Yes |
 | Verified phone | Pixel 10 Pro XL / Android 16 / SDK 36 |
 | Verified target | `H222` Bluetooth receiver |
-| Verified connected-car state | Yes, `metadata_17=Carkit` while H222 is connected |
-| ASVD companion state | Writes `/data/adb/asvd/bt-helper.env`; v0.6.0 adds LIST health fields |
-| Online update support | Enabled via Magisk `updateJson` |
-| Non-Carkit metadata values | Implemented, experimental until UI mapping is verified |
-| Other phones/OEMs | Unknown / tester feedback needed |
+| Verified result | `metadata_17=Carkit` |
+| Online updates | Enabled via Magisk `updateJson` |
+| Non-Carkit types | Implemented, experimental until more UI mappings are confirmed |
+| Other phones / OEM ROMs | Unknown, tester feedback needed |
 
-## What it does
+## Download
 
-- Lists paired Bluetooth devices.
-- Reads Bluetooth device metadata key `17`.
-- Sets metadata key `17` for one explicitly selected device.
-- Supports device selection by unique Bluetooth name or MAC address.
-- Provides an interactive setup wizard.
-- Provides real dry-run mode.
-- Provides a redacted debug report for GitHub/XDA support.
-- Uses guarded `--confirm-set` and `--confirm-clear` flows for writes.
-- Writes a sanitized shared-state file for ASVD companion reporting.
-- Provides backup/restore helpers for confirmed writes.
+All releases:
 
-## What it does not do
+<https://github.com/Lycidias93/asvd-bt-type-helper/releases>
 
-- No Google Play Services manipulation.
-- No Bluetooth service reload.
-- No direct patching of `/data/misc/bluedroid/bt_config.conf`.
-- No background daemon.
-- No automatic boot-time Bluetooth metadata changes.
-- No automatic ASVD apply-now trigger by default.
-- No support for non-root / non-Magisk devices.
+Latest release:
+
+<https://github.com/Lycidias93/asvd-bt-type-helper/releases/tag/v0.6.1>
+
+Download the Magisk ZIP from the newest stable release:
+
+```text
+ASVD-BT-Type-Helper-vX.X.X.zip
+```
+
+Do **not** install this as a normal APK. Flash the ZIP in Magisk.
 
 ## Install
 
-Flash the ZIP in Magisk, reboot, then run:
+1. Flash the ZIP in Magisk.
+2. Reboot.
+3. Grant/check permissions:
 
 ```sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-grant.sh
 ```
 
-## Recommended first run
-
-Use the wizard:
-
-```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-setup.sh
-```
-
-The wizard redacts MAC addresses by default. Use `--show-mac` only locally when exact MAC targeting is needed.
-
-## Main menu
+4. Start the main menu:
 
 ```sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/asvd.sh
 ```
 
+## Recommended first run
+
+Use the setup wizard first:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-setup.sh
+```
+
+The wizard lists paired Bluetooth devices, reads the selected target, and asks before writing.
+
+MAC addresses are redacted by default. Use `--show-mac` only locally when exact MAC targeting is needed. Do not post raw Bluetooth MAC addresses publicly.
+
+## Safe flow
+
+1. List or pick the target device.
+2. Run dry-run first.
+3. Confirm exactly one target match.
+4. Apply the wanted type with an explicit confirmation flag.
+5. Verify with GET.
+6. Run Doctor if something looks wrong.
+
+Dry-run example:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --dry-run
+```
+
+Expected dry-run markers:
+
+```text
+DRY_RUN=yes
+write_performed=no
+RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_DRY_RUN_DONE
+```
+
+Apply car / Carkit after a successful dry-run:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --confirm-set
+```
+
+Verify the target:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name H222
+```
+
+Expected marker for the verified reference target:
+
+```text
+metadata_17_before=Carkit
+RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_DONE
+```
+
 ## Supported type names
 
-| CLI type | Metadata value | Status |
+| CLI type / alias | Metadata value | Status |
 |---|---|---|
 | `car`, `auto`, `carkit` | `Carkit` | Verified on H222 |
 | `speaker` | `Speaker` | Experimental |
@@ -106,70 +131,91 @@ tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/asvd.sh
 | `default` | `Default` | Experimental |
 | `clear`, `reset`, `null` | clear metadata key 17 | Implemented, use carefully |
 
-## Safe dry-run
+`Carkit` is the verified reference type. Other metadata values are implemented but still need feedback from more devices, ROMs, and OEM Bluetooth settings UIs.
 
-Dry-run resolves the target and prints the planned action, but does not write Bluetooth metadata.
+## Duplicate-safe picker
+
+Use the duplicate-safe picker when Android shows a custom Bluetooth name, but the backend device name is duplicated.
+
+Example:
+
+- Android UI name: `Sauna`
+- Backend name: `Tribit XSound Go`
+- Two devices have the same backend name
+
+Interactive path:
 
 ```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --dry-run
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/asvd.sh
 ```
 
-Expected marker:
+Then use:
 
 ```text
-DRY_RUN=yes
-write_performed=no
-RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_DRY_RUN_DONE
+[5] Pick duplicate-safe device
+[6] Set picked device dry-run
+[7] Set picked device confirmed
 ```
 
-## Apply car/Carkit
+Direct helper path:
 
 ```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --confirm-set
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-pick-device.sh --filter "Tribit XSound Go"
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-pick-device.sh --filter "Tribit XSound Go" --select 1
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-picked.sh --type speaker --dry-run
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-picked.sh --type speaker --confirm-set
 ```
 
-If a display name is duplicated, use MAC targeting locally:
+The picker shows non-secret hints such as `candidate_id`, `source_index`, `backend_name`, `metadata_17`, `duplicate_name`, `last_connected`, `dev_type`, `dev_class`, and `likely_current_media`.
+
+No raw Bluetooth MAC address is shown by default.
+
+## Read-only views and reports
+
+Currently connected devices:
 
 ```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --mac <BT_MAC> --type car --confirm-set
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-connected-devices.sh
 ```
 
-Do not post real MAC addresses publicly.
-
-## Verify
+Last connected Bluetooth hints:
 
 ```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name H222
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-last-devices.sh --last-connected
 ```
 
-Expected verified marker for the H222 reference target:
+Last devices summary:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-last-devices.sh
+```
+
+Magisk Action Button report:
 
 ```text
-metadata_17_before=Carkit
-RESULT: ASVD_BT_TYPE_HELPER_GET_DONE
+/storage/emulated/0/Download/ASVD-BT-Type-Helper-action-latest.txt
 ```
 
-## ASVD companion shared state
+The Action Button report is read-only and includes module version, shared ASVD state, Doctor summary, current/last device hints, metadata overview, and recommended commands.
 
-The helper writes sanitized shared state for ASVD v1.2.6+:
+## ASVD companion state
+
+The helper writes sanitized shared state for Audio Safe Volume Disabler / ASVD v1.2.6+:
 
 ```text
 /data/adb/asvd/bt-helper.env
 ```
 
-Example state:
+Example fields:
 
 ```text
 helper_present=1
 helper_package=org.asvd.bttypehelper
-helper_version=0.6.0
-helper_versionCode=60
+helper_version=0.6.1
+helper_versionCode=61
 target_name=H222
 requested_type=Carkit
 last_result=PASS
-last_run=2026-05-13T09:38:00+0200
-last_error=
-target_address_hash=
 current_type=Carkit
 previous_type=Carkit
 method=metadata_api
@@ -178,38 +224,30 @@ asvd_apply_now_triggered=0
 
 The shared-state file must not contain a raw Bluetooth MAC address.
 
-## Optional ASVD apply-now
+ASVD remains independent. BT Helper is optional and does not force ASVD actions by default.
 
-The helper does not trigger ASVD by default. To run ASVD apply-now after a confirmed type set, use the explicit opt-in flag:
+Optional ASVD apply-now after a confirmed metadata write:
 
 ```sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --confirm-set --asvd-apply-now
 ```
 
-## Compare current paired device types
+## Backup, restore and compare
+
+Confirmed SET/CLEAR actions create a backup before writing.
+
+Compare currently paired device types:
 
 ```sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-compare-types.sh
 ```
 
-## Restore last saved backup
-
-Confirmed SET/CLEAR actions create a backup before writing. Restore is explicit and guarded:
+Restore last saved metadata backup:
 
 ```sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-restore-last.sh --dry-run
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-restore-last.sh --confirm-restore
 ```
-
-## Debug report for GitHub/XDA
-
-Generate a public-safe debug report:
-
-```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-debug.sh --name H222
-```
-
-The report redacts Bluetooth MAC addresses by default and writes a file to the Download folder.
 
 ## Doctor / health check
 
@@ -217,97 +255,89 @@ The report redacts Bluetooth MAC addresses by default and writes a file to the D
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-doctor.sh
 ```
 
-Expected marker:
+Successful result:
 
 ```text
 RESULT: ASVD_BT_TYPE_HELPER_DOCTOR_PASS
 ```
 
+## Debug report for GitHub / XDA
+
+Generate a public-safe debug report:
+
+```sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-debug.sh --name H222
+```
+
+MAC addresses are redacted by default. Do not post output generated with `--show-mac` publicly.
+
+## Reliability notes
+
+### v0.6.1
+
+`v0.6.1` fixes a Pixel/Termux root-shell broadcast path where `am broadcast` can fail before the receiver is invoked because `system_server` is denied access to the Termux PTY (`/dev/pts/0`).
+
+Changes:
+
+- `am broadcast` runs detached from the Termux PTY.
+- Package preflight output is captured before printing where `helper-common.sh` is used.
+- `helper-get.sh` uses `request_id` polling and strict GET result validation.
+- `helper-get.sh` fails if no fresh GET result exists.
+- `helper-doctor.sh` treats GET wrapper failures as real failures.
+
+### v0.6.0
+
+`v0.6.0` fixes the setup Wizard stale-result failure mode.
+
+Before v0.6.0, the wizard could request `LIST` but consume an existing `last-result.txt` from a previous `GET`, causing a false `no_devices_parsed` even though Bluetooth access worked.
+
+The wizard now validates result provenance before parsing devices:
+
+```text
+action=org.asvd.bttypehelper.LIST
+RESULT: ASVD_BT_TYPE_HELPER_LIST_DONE
+request_id=<matching request>
+```
+
+Wrong or stale results fail explicitly:
+
+```text
+FAIL stale_or_wrong_result action=GET expected=LIST
+```
+
+## What this module does not do
+
+- No Google Play Services manipulation.
+- No Bluetooth service reload.
+- No direct patching of `/data/misc/bluedroid/bt_config.conf`.
+- No background daemon.
+- No automatic boot-time Bluetooth metadata changes.
+- No automatic ASVD apply-now trigger by default.
+- No support for non-root / non-Magisk devices.
+- No normal APK install support.
+
 ## Online updates
 
-The Magisk module contains:
+The module contains:
 
 ```text
 updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json
 ```
 
-The repository root contains `update.json`, which points Magisk to the latest stable release ZIP and changelog. Magisk compares `versionCode`; `v0.6.0` uses `versionCode: 60`.
+Magisk uses `versionCode` for update comparison. `v0.6.1` uses `versionCode: 61`.
 
-## Safety
+## Changelog and docs
 
-This is system-level tooling. Use only on devices you can recover. Always verify the target first with `helper-get.sh`. Do not run SET commands against ambiguous device names. Prefer `--mac` locally when multiple paired devices share the same display name.
+Full changelog:
 
-`Carkit` remains the verified reference type. Other metadata values are experimental until confirmed on more devices and OEM ROMs.
+- [`CHANGELOG.md`](CHANGELOG.md)
 
-## Compatibility
+Additional docs:
 
-See [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md).
+- [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md)
+- [`docs/TESTING.md`](docs/TESTING.md)
+- [`docs/WORKFLOW.md`](docs/WORKFLOW.md)
 
-## Testing and release workflow
+Related module:
 
-See [`docs/TESTING.md`](docs/TESTING.md) and [`docs/WORKFLOW.md`](docs/WORKFLOW.md).
-
-<!-- v057-action-current-last-devices-start -->
-## v0.5.7 Action Button and Bluetooth device views
-
-`v0.5.7` adds read-only diagnostics and support helpers:
-
-- Magisk Action Button support via `action.sh`.
-- Action Button report written to the Download folder.
-- Currently connected Bluetooth device hints.
-- Last connected Bluetooth hints.
-- Last devices summary.
-- Improved redaction for raw and partially masked Bluetooth addresses.
-
-Run from a root shell:
-
-```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-connected-devices.sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-last-devices.sh --last-connected
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-last-devices.sh --last-devices
-```
-
-The Action Button is read-only. It does not set metadata, clear metadata, restart Bluetooth, or trigger ASVD apply-now by default.
-<!-- v057-action-current-last-devices-end -->
-
-<!-- ASVD_BT_HELPER_CURRENT_RELEASE_START -->
-## Current stable release
-
-Current stable release: **v0.6.1** (`versionCode=61`).
-
-v0.6.0 is a Wizard/Result robustness release. It fixes stale/wrong result handling where a setup LIST request could accidentally parse an older GET result and report a false `no_devices_parsed`.
-
-Key runtime changes:
-
-- Adds `request_id` to helper broadcasts and result files.
-- Setup Wizard accepts only matching LIST results.
-- LIST validation requires:
-  - `action=org.asvd.bttypehelper.LIST`
-  - `RESULT: ASVD_BT_TYPE_HELPER_LIST_DONE`
-  - at least one `-- device` block
-- Replaces fixed 2-second LIST waits with short polling.
-- Adds explicit failure output such as `FAIL stale_or_wrong_result action=GET expected=LIST`.
-- Extends `helper-doctor.sh` with LIST parse / Wizard smoke.
-
-H222 does not need another metadata write when it already shows:
-
-```text
-metadata_17=Carkit
-```
-<!-- ASVD_BT_HELPER_CURRENT_RELEASE_END -->
-
-<!-- ASVD_BT_HELPER_V061_START -->
-## v0.6.1 FD-detach and GET hardening
-
-`v0.6.1` fixes the Pixel/Termux root-shell broadcast path observed with Magisk/Android 16 where `am broadcast` can fail before the receiver is invoked because `system_server` is denied access to the Termux PTY (`/dev/pts/0`).
-
-Changes:
-
-- `am broadcast` is now run detached from the Termux PTY (`stdin/stdout/stderr` redirected away from devpts).
-- `pm path` preflight output in helper wrappers is captured before printing, avoiding direct framework writes to the Termux PTY.
-- `helper-get.sh` now uses `request_id` polling and strict GET result validation.
-- `helper-get.sh` returns failure if no fresh GET result exists; it no longer reports success with missing result files.
-- `helper-doctor.sh` treats GET wrapper failures as real failures.
-
-No Bluetooth metadata is written by LIST/GET/Doctor flows.
-<!-- ASVD_BT_HELPER_V061_END -->
+- Audio Safe Volume Disabler / ASVD: <https://github.com/Lycidias93/audio-safe-volume-battery-aware>
