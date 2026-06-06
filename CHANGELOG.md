@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fixed `update.json` changelog metadata to use raw Markdown instead of a GitHub HTML release page.
+
 ## v0.6.1 - 2026-05-16
 
 - Fixed Pixel/Termux root-shell broadcast failures by detaching `am broadcast` from the Termux PTY.
