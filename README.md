@@ -1,3 +1,7 @@
+<!-- telegram-release-channel:start -->
+> Release updates: [@lycidias93](https://t.me/lycidias93)
+<!-- telegram-release-channel:end -->
+
 # ASVD BT Type Helper
 
 <!-- ASVD_BT_HELPER_INTRO_START -->
