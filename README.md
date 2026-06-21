@@ -20,13 +20,13 @@ The helper can list paired Bluetooth devices, read metadata key `17`, and set it
 
 | Area | Status |
 |---|---|
-| Current stable release | `v0.6.1` |
-| Version / versionCode | `0.6.1` / `61` |
+| Current stable release | `v0.6.2` |
+| Version / versionCode | `0.6.2` / `62` |
 | Runtime model | Magisk module with privileged helper APK |
 | Package | `org.asvd.bttypehelper` |
 | Normal APK install | Not supported |
 | Root / Magisk required | Yes |
-| Verified phone | Pixel 10 Pro XL / Android 16 / SDK 36 |
+| Verified phone | Pixel 10 Pro XL / Android 17 / SDK 37 |
 | Verified target | `H222` Bluetooth receiver |
 | Verified result | `metadata_17=Carkit` |
 | Online updates | Enabled via Magisk `updateJson` |
@@ -41,7 +41,7 @@ All releases:
 
 Latest release:
 
-<https://github.com/Lycidias93/asvd-bt-type-helper/releases/tag/v0.6.1>
+<https://github.com/Lycidias93/asvd-bt-type-helper/releases/tag/v0.6.2>
 
 Download the Magisk ZIP from the newest stable release:
 
@@ -204,7 +204,9 @@ The Action Button report is read-only and includes module version, shared ASVD s
 
 ## ASVD companion state
 
-The helper writes sanitized shared state for Audio Safe Volume Disabler / ASVD v1.2.6+:
+The helper writes sanitized shared state for Audio Safe Volume Disabler / ASVD. Recommended companion target: **ASVD v1.2.9 or newer**. Minimum known-compatible ASVD line: `v1.2.7+`.
+
+Android 17 note: v0.6.2 uses targetSdk 30 legacy Bluetooth compatibility because the runtime `BLUETOOTH_CONNECT` grant path stayed denied for the priv-app receiver on the reference Pixel.
 
 ```text
 /data/adb/asvd/bt-helper.env
@@ -215,8 +217,8 @@ Example fields:
 ```text
 helper_present=1
 helper_package=org.asvd.bttypehelper
-helper_version=0.6.1
-helper_versionCode=61
+helper_version=0.6.2
+helper_versionCode=62
 target_name=H222
 requested_type=Carkit
 last_result=PASS
@@ -226,7 +228,7 @@ method=metadata_api
 asvd_apply_now_triggered=0
 ```
 
-The shared-state file must not contain a raw Bluetooth MAC address.
+The shared-state contract remains `bt-helper-env-v1` and is unchanged for ASVD v1.2.9. The shared-state file must not contain a raw Bluetooth MAC address.
 
 ASVD remains independent. BT Helper is optional and does not force ASVD actions by default.
 
@@ -257,6 +259,7 @@ tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-restore-last.sh 
 
 ```sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-doctor.sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-env-verify.sh
 ```
 
 Successful result:
@@ -276,6 +279,18 @@ tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-debug.sh --name 
 MAC addresses are redacted by default. Do not post output generated with `--show-mac` publicly.
 
 ## Reliability notes
+
+### v0.6.2
+
+`v0.6.2` is an Android 17 / ASVD v1.2.9 companion polish release.
+
+Changes:
+
+- Documents Pixel 10 Pro XL / Android 17 / SDK 37 as the verified reference after live smoke and targetSdk 30 Bluetooth compatibility recovery.
+- Documents ASVD v1.2.9 or newer as the recommended companion target while keeping the shared-state contract unchanged.
+- Adds `helper-env-verify.sh` for read-only `bt-helper.env` schema and raw-MAC checks.
+- Extends Doctor/report output with Android version, ASVD companion status, contract version, BLUETOOTH_CONNECT grant state, active/module-update integrity, owner/perms and mixed-payload checks.
+- Keeps Bluetooth metadata write behavior unchanged.
 
 ### v0.6.1
 
@@ -328,7 +343,7 @@ The module contains:
 updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json
 ```
 
-Magisk uses `versionCode` for update comparison. `v0.6.1` uses `versionCode: 61`.
+Magisk uses `versionCode` for update comparison. `v0.6.2` uses `versionCode: 62`.
 
 ## Changelog and docs
 

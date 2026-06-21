@@ -1,8 +1,14 @@
 # Changelog
 
-## Unreleased
+## v0.6.2 - 2026-06-21
 
+- Added Android 17 / SDK 37 companion polish after live BT Helper v0.6.1 smoke on the reference Pixel, using targetSdk 30 legacy Bluetooth compatibility after BLUETOOTH_CONNECT runtime grant stayed denied on Android 17.
+- Documented ASVD v1.2.9 or newer as the recommended companion target while keeping the `bt-helper.env` contract unchanged.
+- Added `helper-env-verify.sh` for read-only shared-state schema validation and raw Bluetooth MAC leak checks.
+- Extended Doctor/report output with Android version, ASVD companion status, contract version, BLUETOOTH_CONNECT/targetSdk compatibility state, active/modules_update integrity and mixed-payload checks.
+- Kept Bluetooth metadata write behavior unchanged; no NoHFP, LSPosed, daemon, boot-time metadata write, BT reload, or automatic ASVD apply-now behavior was added.
 - Fixed `update.json` changelog metadata to use raw Markdown instead of a GitHub HTML release page.
+- Cleaned duplicated `v0.5.9` changelog entries.
 
 ## v0.6.1 - 2026-05-16
 
@@ -12,6 +18,7 @@
 - Fixed false-positive GET wrapper success when no fresh result file exists.
 - Hardened `helper-doctor.sh` so GET smoke failures count as failures.
 - No Bluetooth metadata write behavior changed.
+
 
 ## v0.6.0 - 2026-05-16
 
@@ -28,15 +35,6 @@
 - Kept root out of the APK; no root broker or automatic Bluetooth metadata writes were added.
 
 
-## v0.5.9 - 2026-05-14
-
-- Added improved duplicate-safe picker UX.
-- Added `candidate_id`, `source_index`, `last_connected`, `dev_type`, `dev_class`, and `likely_current_media` display fields.
-- Stored duplicate-picker metadata in `picked-device.env`.
-- Updated picked-device dry-run output to show selected candidate context before writing.
-- Preserved MAC redaction by default.
-- Kept duplicate-name writes guarded and non-guessing.
-- Skipped unreleased v0.5.8 as an internal test build.
 
 ## v0.5.9 - 2026-05-14
 
@@ -48,25 +46,6 @@
 - Kept duplicate-name writes guarded and non-guessing.
 - Skipped unreleased v0.5.8 as an internal test build.
 
-## v0.5.9 - 2026-05-14
-
-- Added improved duplicate-safe picker UX.
-- Added `candidate_id`, `source_index`, `last_connected`, `dev_type`, `dev_class`, and `likely_current_media` display fields.
-- Stored duplicate-picker metadata in `picked-device.env`.
-- Updated picked-device dry-run output to show selected candidate context before writing.
-- Preserved MAC redaction by default.
-- Kept duplicate-name writes guarded and non-guessing.
-- Skipped unreleased v0.5.8 as an internal test build.
-
-## v0.5.9 - 2026-05-14
-
-- Added improved duplicate-safe picker UX.
-- Added `candidate_id`, `source_index`, `last_connected`, `dev_type`, `dev_class`, and `likely_current_media` display fields.
-- Stored duplicate-picker metadata in `picked-device.env`.
-- Updated picked-device dry-run output to show selected candidate context before writing.
-- Preserved MAC redaction by default.
-- Kept duplicate-name writes guarded and non-guessing.
-- Skipped unreleased v0.5.8 as an internal test build.
 
 ## v0.5.6 - 2026-05-13
 
@@ -77,6 +56,7 @@
 - Added explicit opt-in `--asvd-apply-now`; no automatic ASVD run by default.
 - Kept Bluetooth metadata/API workflow only; no GMS-disable/offline-UI mode and no `bt_config.conf` patching.
 - Verified H222 remains `metadata_17=Carkit` and ASVD v1.2.6 verify reports companion state.
+
 
 ## v0.5.5 - 2026-05-13
 
@@ -90,6 +70,7 @@ Stable release: Type Expansion + Restore Safety.
 - Added `helper-compare-types.sh`.
 - Expanded setup wizard type menu.
 - Verified v0.5.5 postflash smoke v2 with H222 still `metadata_17=Carkit`.
+
 
 
 ## v0.5.4 - 2026-05-12
@@ -111,6 +92,7 @@ User-friendly UX and safety release.
   - multiline `printf` string issue
   - reserved/conflicting variable name `exp`
 
+
 ## v0.5.3 - 2026-05-12
 
 Stable release adding Magisk online update metadata.
@@ -126,6 +108,7 @@ Stable release adding Magisk online update metadata.
 
 
 <!-- since-prerelease-start -->
+
 ## Changes since v0.4.15 pre-release
 
 This stable release includes all changes made after the v0.4.15 pre-release:
@@ -167,6 +150,7 @@ This stable release includes all changes made after the v0.4.15 pre-release:
 
 <!-- since-prerelease-end -->
 
+
 ## v0.5.2 - 2026-05-12
 
 Stable release.
@@ -180,6 +164,7 @@ Stable release.
 - Speaker/headphones type values are available but remain experimental until UI mapping is confirmed on reference devices.
 
 
+
 ## v0.4.15 - pre-release
 
 - Added guarded Magisk installer cleanup for temporary `/data/app` parse-test installs.
@@ -188,6 +173,7 @@ Stable release.
 - Kept `helper-set-type.sh` guarded by `--confirm-set`.
 - Verified H222 metadata remains `Carkit` after reboot on the reference Pixel setup.
 
+
 ## v0.4.14
 
 - Added `helper-list.sh`.
@@ -195,16 +181,19 @@ Stable release.
 - Added `helper-set-type.sh` with `--type car` / `auto` / `carkit` mapping to `Carkit`.
 - Added redacted default MAC output and local `--show-mac` mode.
 
+
 ## v0.4.13
 
 - Fixed helper wrappers to use absolute `/system/bin/...` commands.
 - Verified GET wrapper path with H222.
 - Verified Carkit metadata persisted for H222.
 
+
 ## v0.4.12
 
 - Removed `/data/local/tmp` write fallback to avoid SELinux EACCES noise.
 - Improved broadcast result-data and logcat diagnostics.
+
 
 ## v0.4.11
 
@@ -212,13 +201,16 @@ Stable release.
 - Added broadcast result-data output.
 - Verified privileged GET path for H222.
 
+
 ## v0.4.10
 
 - First APK-valid Magisk priv-app build with APK Signature Scheme v3.
 
+
 ## v0.4.x earlier
 
 - Research builds for on-device APK packaging, manual binary AndroidManifest generation, privileged permission allowlist, and Bluetooth metadata access.
+
 
 ## v0.5.7 - Action Button and current/last Bluetooth device views
 

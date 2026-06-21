@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 
-VER="0.5.4"
+VER="0.6.2"
 TAG="v$VER"
-VERSION_CODE="54"
+VERSION_CODE="62"
 ID="asvd-bt-type-helper"
 PKG="org.asvd.bttypehelper"
 NAME="ASVD BT Type Helper"
@@ -173,9 +173,15 @@ public class BtTypeReceiver extends BroadcastReceiver {
     private static String normalizeTypeValue(String v) {
         if (v == null) return null;
         String x = v.trim().toLowerCase(Locale.US);
-        if (x.equals("car") || x.equals("auto") || x.equals("carkit")) return "Carkit";
+        x = x.replace('_', '-');
+        if (x.equals("car") || x.equals("auto") || x.equals("carkit") || x.equals("car-kit")) return "Carkit";
         if (x.equals("speaker") || x.equals("lautsprecher")) return "Speaker";
-        if (x.equals("headphones") || x.equals("headphone") || x.equals("kopfhörer") || x.equals("kopfhoerer")) return "Headphones";
+        if (x.equals("headset") || x.equals("headsets") || x.equals("headphones") || x.equals("headphone") || x.equals("kopfhörer") || x.equals("kopfhoerer")) return "Headset";
+        if (x.equals("untethered-headset") || x.equals("untethered") || x.equals("earbuds") || x.equals("earbud") || x.equals("buds") || x.equals("tws") || x.equals("true-wireless")) return "Untethered Headset";
+        if (x.equals("watch") || x.equals("smartwatch") || x.equals("wearable")) return "Watch";
+        if (x.equals("stylus") || x.equals("pen") || x.equals("stift")) return "Stylus";
+        if (x.equals("hearingaid") || x.equals("hearing-aid") || x.equals("hearing-aids") || x.equals("hearing_aid")) return "HearingAid";
+        if (x.equals("default") || x.equals("android-default") || x.equals("reset-default")) return "Default";
         return null;
     }
 
@@ -264,7 +270,7 @@ public class BtTypeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         List<String> out = new ArrayList<String>();
-        add(out, "== ASVD BT Type Helper v0.5.4 ==");
+        add(out, "== ASVD BT Type Helper v0.6.2 ==");
         add(out, "time=" + new Date().toString());
         add(out, "onReceive_enter=yes");
 
@@ -273,6 +279,7 @@ public class BtTypeReceiver extends BroadcastReceiver {
             String targetName = intent == null ? null : intent.getStringExtra("name");
             String targetMac = intent == null ? null : intent.getStringExtra("mac");
             String showMacExtra = intent == null ? null : intent.getStringExtra("show_mac");
+            String requestId = intent == null ? null : intent.getStringExtra("request_id");
             boolean showMac = "1".equals(showMacExtra) || "true".equalsIgnoreCase(s(showMacExtra));
             if ((targetName == null || targetName.trim().isEmpty()) && (targetMac == null || targetMac.trim().isEmpty())) targetName = "H222";
 
@@ -280,6 +287,7 @@ public class BtTypeReceiver extends BroadcastReceiver {
             add(out, "target_name=" + s(targetName));
             add(out, "target_mac=" + sanitizeMac(targetMac));
             add(out, "show_mac=" + showMac);
+            add(out, "request_id=" + s(requestId));
 
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
             add(out, "adapter=" + s(adapter));
@@ -482,7 +490,7 @@ strings = [
     'versionCode', 'versionName', 'minSdkVersion', 'targetSdkVersion', 'name', 'label', 'exported',
     'manifest', 'uses-sdk', 'uses-permission', 'application', 'receiver', 'intent-filter', 'action',
     'package', 'android', ANDROID_URI,
-    'org.asvd.bttypehelper', '54', '0.5.4', '31', '35',
+    'org.asvd.bttypehelper', '62', '0.6.2', '23', '30',
     'android.permission.BLUETOOTH', 'android.permission.BLUETOOTH_ADMIN', 'android.permission.BLUETOOTH_CONNECT', 'android.permission.BLUETOOTH_PRIVILEGED',
     'ASVD BT Type Helper', '.BtTypeReceiver', 'true',
     'org.asvd.bttypehelper.GET', 'org.asvd.bttypehelper.SET_CARKIT', 'org.asvd.bttypehelper.SET_TYPE', 'org.asvd.bttypehelper.CLEAR', 'org.asvd.bttypehelper.LIST'
@@ -601,12 +609,12 @@ body += resource_map()
 body += start_ns()
 body += start_elem('manifest', [
     attr_str('package', 'org.asvd.bttypehelper'),
-    attr_android_int('versionCode', '54', 54),
-    attr_android_str('versionName', '0.5.4'),
+    attr_android_int('versionCode', '62', 62),
+    attr_android_str('versionName', '0.6.2'),
 ])
 body += start_elem('uses-sdk', [
-    attr_android_int('minSdkVersion', '31', 31),
-    attr_android_int('targetSdkVersion', '35', 35),
+    attr_android_int('minSdkVersion', '23', 23),
+    attr_android_int('targetSdkVersion', '30', 30),
 ])
 body += end_elem('uses-sdk')
 for perm in ['android.permission.BLUETOOTH', 'android.permission.BLUETOOTH_ADMIN', 'android.permission.BLUETOOTH_CONNECT', 'android.permission.BLUETOOTH_PRIVILEGED']:
@@ -707,7 +715,7 @@ name=$NAME
 version=$VER
 versionCode=$VERSION_CODE
 author=Lycidias93
-description=User-friendly ASVD Bluetooth device type metadata helper with dry-run, main menu, doctor, debug report, online update, config, clear, and guarded car/speaker/headphones type changes.
+description=User-friendly ASVD Bluetooth device type metadata helper with Action Button report, current/last-device views, shared ASVD state, dry-run, doctor, backup/restore, and guarded type changes.
 updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json
 EOFPROP
 
@@ -718,9 +726,9 @@ PROPFILE=true
 POSTFSDATA=false
 LATESTARTSERVICE=false
 
-ui_print "- ASVD BT Type Helper v0.5.4"
+ui_print "- ASVD BT Type Helper v0.6.2"
 ui_print "- Experimental privileged helper APK"
-ui_print "- User-friendly v0.5.4: dry-run, main menu, doctor, online update, wizard, report, config, clear, experimental speaker/headphones types"
+ui_print "- v0.6.2: Duplicate-safe picker, hard aborts for non-unique targets, action/current/last-device views"
 ui_print "- No GMS manipulation"
 ui_print "- No Bluetooth reload"
 ui_print "- No bt_config.conf patching"
@@ -749,17 +757,25 @@ set_perm_recursive "$MODPATH" 0 0 0755 0644
 set_perm "$MODPATH/helper-common.sh" 0 0 0755
 set_perm "$MODPATH/helper-grant.sh" 0 0 0755
 set_perm "$MODPATH/helper-list.sh" 0 0 0755
+set_perm "$MODPATH/helper-connected-devices.sh" 0 0 0755
+set_perm "$MODPATH/helper-last-devices.sh" 0 0 0755
+set_perm "$MODPATH/helper-pick-device.sh" 0 0 0755
+set_perm "$MODPATH/helper-set-picked.sh" 0 0 0755
 set_perm "$MODPATH/helper-get.sh" 0 0 0755
 set_perm "$MODPATH/helper-set-carkit.sh" 0 0 0755
 set_perm "$MODPATH/helper-set-type.sh" 0 0 0755
 set_perm "$MODPATH/helper-clear-type.sh" 0 0 0755
 set_perm "$MODPATH/helper-report.sh" 0 0 0755
 set_perm "$MODPATH/helper-debug.sh" 0 0 0755
+set_perm "$MODPATH/helper-env-verify.sh" 0 0 0755
 set_perm "$MODPATH/helper-setup.sh" 0 0 0755
 set_perm "$MODPATH/helper-apply-config.sh" 0 0 0755
 set_perm "$MODPATH/helper-doctor.sh" 0 0 0755
 set_perm "$MODPATH/helper-update-info.sh" 0 0 0755
+set_perm "$MODPATH/helper-restore-last.sh" 0 0 0755
+set_perm "$MODPATH/helper-compare-types.sh" 0 0 0755
 set_perm "$MODPATH/asvd.sh" 0 0 0755
+set_perm "$MODPATH/action.sh" 0 0 0755
 set_perm "$MODPATH/system/priv-app/AsvdBtTypeHelper/AsvdBtTypeHelper.apk" 0 0 0644
 set_perm "$MODPATH/system/etc/permissions/privapp-permissions-org.asvd.bttypehelper.xml" 0 0 0644
 set_perm "$MODPATH/system/etc/default-permissions/default-permissions-org.asvd.bttypehelper.xml" 0 0 0644
@@ -806,7 +822,7 @@ asvd_target_args() {
         SHOW_MAC="1"
         ;;
       --help|-h)
-        echo "Usage: $0 [NAME] [--name NAME] [--mac AA:BB:CC:DD:EE:FF] [--show-mac]"
+        echo "Usage: $0 [NAME] [--name NAME] [--mac <BT_MAC>] [--show-mac]"
         exit 0
         ;;
       --*)
@@ -847,7 +863,19 @@ asvd_dump_results() {
     | /system/bin/tail -180 || true
 }
 
+asvd_ensure_runtime_permissions() {
+  # Android 17 / SDK 37: getBondedDevices() may fail with
+  # Need android.permission.BLUETOOTH_CONNECT unless the runtime grant is present.
+  /system/bin/pm grant "$PKG" android.permission.BLUETOOTH_CONNECT >/dev/null 2>&1 || true
+  state="unknown"
+  if /system/bin/dumpsys package "$PKG" 2>/dev/null     | /system/bin/grep -A25 'runtime permissions:'     | /system/bin/grep -q 'android.permission.BLUETOOTH_CONNECT: granted=true'; then
+    state="granted"
+  fi
+  echo "bluetooth_connect_permission=$state"
+}
+
 asvd_broadcast() {
+  asvd_ensure_runtime_permissions
   ACTION="$1"
   shift || true
   set -- \
@@ -859,8 +887,321 @@ asvd_broadcast() {
   if [ -n "${NAME:-}" ]; then set -- "$@" --es name "$NAME"; fi
   if [ -n "${MAC:-}" ]; then set -- "$@" --es mac "$MAC"; fi
   if [ "${SHOW_MAC:-0}" = "1" ]; then set -- "$@" --es show_mac 1; fi
+  if [ -n "${REQUEST_ID:-}" ]; then set -- "$@" --es request_id "$REQUEST_ID"; fi
   if [ -n "${TYPE_VALUE:-}" ]; then set -- "$@" --es type_value "$TYPE_VALUE"; fi
-  /system/bin/am broadcast "$@"
+  set +e
+  /system/bin/am broadcast "$@" </dev/null >/dev/null 2>&1
+  rc=$?
+  set -e
+  echo "am_broadcast_detached_rc=$rc"
+  return "$rc"
+}
+
+asvd_pm_path() {
+  pkg="${1:-$PKG}"
+  set +e
+  out="$(/system/bin/pm path "$pkg" </dev/null 2>&1)"
+  rc=$?
+  set -e
+  echo "$out"
+  return "$rc"
+}
+
+BT_HELPER_VERSION="0.6.2"
+BT_HELPER_VERSION_CODE="62"
+ASVD_STATE_DIR="/data/adb/asvd"
+ASVD_STATE_FILE="$ASVD_STATE_DIR/bt-helper.env"
+
+asvd_state_clean() {
+  /system/bin/printf '%s' "${1:-}" | /system/bin/tr '
+
+' '  ' | /system/bin/sed "s/'/'\\''/g"
+}
+
+asvd_state_line() {
+  key="$1"
+  val="$(asvd_state_clean "${2:-}")"
+  if [ -z "$val" ]; then
+    echo "$key="
+    return 0
+  fi
+  case "$val" in
+    *[!A-Za-z0-9_./:@+-]* ) /system/bin/printf "%s='%s'
+" "$key" "$val" ;;
+    * ) /system/bin/printf "%s=%s
+" "$key" "$val" ;;
+  esac
+}
+
+asvd_state_existing() {
+  key="$1"
+  [ -s "$ASVD_STATE_FILE" ] || return 0
+  # shellcheck disable=SC1090
+  . "$ASVD_STATE_FILE" 2>/dev/null || true
+  case "$key" in
+    helper_present) /system/bin/printf '%s' "${helper_present:-}" ;;
+    helper_package) /system/bin/printf '%s' "${helper_package:-}" ;;
+    helper_version) /system/bin/printf '%s' "${helper_version:-}" ;;
+    helper_versionCode) /system/bin/printf '%s' "${helper_versionCode:-}" ;;
+    target_name) /system/bin/printf '%s' "${target_name:-}" ;;
+    requested_type) /system/bin/printf '%s' "${requested_type:-}" ;;
+    last_result) /system/bin/printf '%s' "${last_result:-}" ;;
+    last_run) /system/bin/printf '%s' "${last_run:-}" ;;
+    last_error) /system/bin/printf '%s' "${last_error:-}" ;;
+    target_address_hash) /system/bin/printf '%s' "${target_address_hash:-}" ;;
+    current_type) /system/bin/printf '%s' "${current_type:-}" ;;
+    previous_type) /system/bin/printf '%s' "${previous_type:-}" ;;
+    method) /system/bin/printf '%s' "${method:-}" ;;
+    asvd_apply_now_triggered) /system/bin/printf '%s' "${asvd_apply_now_triggered:-}" ;;
+  esac
+}
+
+asvd_state_write() {
+  state_target_name="${1:-unknown}"
+  state_requested_type="${2:-unknown}"
+  state_last_result="${3:-UNKNOWN}"
+  state_last_error="${4:-}"
+  state_current_type="${5:-unknown}"
+  state_previous_type="${6:-unknown}"
+  state_method="${7:-metadata_api}"
+  state_apply_now="${8:-0}"
+  state_ts="$(/system/bin/date +%Y-%m-%dT%H:%M:%S%z 2>/dev/null || /system/bin/date 2>/dev/null || echo unknown)"
+
+  /system/bin/mkdir -p "$ASVD_STATE_DIR"
+  /system/bin/chmod 0755 "$ASVD_STATE_DIR" 2>/dev/null || true
+  tmp="$ASVD_STATE_FILE.tmp.$$"
+  {
+    echo "helper_present=1"
+    asvd_state_line helper_package "$PKG"
+    asvd_state_line helper_version "$BT_HELPER_VERSION"
+    echo "helper_versionCode=$BT_HELPER_VERSION_CODE"
+    asvd_state_line target_name "$state_target_name"
+    asvd_state_line requested_type "$state_requested_type"
+    asvd_state_line last_result "$state_last_result"
+    asvd_state_line last_run "$state_ts"
+    asvd_state_line last_error "$state_last_error"
+    asvd_state_line target_address_hash ""
+    asvd_state_line current_type "$state_current_type"
+    asvd_state_line previous_type "$state_previous_type"
+    asvd_state_line method "$state_method"
+    echo "asvd_apply_now_triggered=$state_apply_now"
+  } > "$tmp"
+  /system/bin/chmod 0644 "$tmp" 2>/dev/null || true
+  /system/bin/mv -f "$tmp" "$ASVD_STATE_FILE"
+  /system/bin/chmod 0644 "$ASVD_STATE_FILE" 2>/dev/null || true
+  echo "shared_state_written=$ASVD_STATE_FILE"
+}
+
+asvd_result_value() {
+  key="$1"
+  for f in "/data/user/0/$PKG/files/last-result.txt" "/data_mirror/data_ce/null/0/$PKG/files/last-result.txt" "/data_mirror/data_de/null/0/$PKG/files/last-result.txt"; do
+    [ -s "$f" ] || continue
+    /system/bin/grep -m1 "^$key=" "$f" 2>/dev/null | /system/bin/sed "s/^$key=//" && return 0
+  done
+  return 0
+}
+
+asvd_result_has() {
+  pat="$1"
+  for f in "/data/user/0/$PKG/files/last-result.txt" "/data_mirror/data_ce/null/0/$PKG/files/last-result.txt" "/data_mirror/data_de/null/0/$PKG/files/last-result.txt"; do
+    [ -s "$f" ] || continue
+    /system/bin/grep -q "$pat" "$f" 2>/dev/null && return 0
+  done
+  return 1
+}
+
+asvd_make_request_id() {
+  ts="$(/system/bin/date +%Y%m%d_%H%M%S 2>/dev/null || /system/bin/date +%s 2>/dev/null || echo now)"
+  echo "${ts}_$$_$(( ($$ * 1103515245 + 12345) % 99999 ))"
+}
+
+asvd_result_paths() {
+  echo "/data/user/0/$PKG/files/last-result.txt"
+  echo "/data_mirror/data_ce/null/0/$PKG/files/last-result.txt"
+  echo "/data_mirror/data_de/null/0/$PKG/files/last-result.txt"
+}
+
+asvd_find_any_result_file() {
+  asvd_result_paths | while IFS= read -r f; do
+    [ -s "$f" ] || continue
+    echo "$f"
+    exit 0
+  done
+}
+
+asvd_short_action() {
+  case "${1:-}" in
+    *.GET) echo "GET" ;;
+    *.LIST) echo "LIST" ;;
+    *.SET_CARKIT) echo "SET_CARKIT" ;;
+    *.SET_TYPE) echo "SET_TYPE" ;;
+    *.CLEAR) echo "CLEAR" ;;
+    "") echo "missing" ;;
+    *) echo "$1" ;;
+  esac
+}
+
+asvd_result_action_from_file() {
+  f="$1"
+  /system/bin/grep -m1 '^action=' "$f" 2>/dev/null | /system/bin/sed 's/^action=//' || true
+}
+
+asvd_result_request_id_from_file() {
+  f="$1"
+  /system/bin/grep -m1 '^request_id=' "$f" 2>/dev/null | /system/bin/sed 's/^request_id=//' || true
+}
+
+asvd_device_block_count_from_file() {
+  f="$1"
+  c="$(/system/bin/grep -c '^-- device ' "$f" 2>/dev/null || true)"
+  [ -n "$c" ] || c=0
+  echo "$c"
+}
+
+asvd_wait_result_file() {
+  expected_action="$1"
+  request_id="$2"
+  max_polls="${3:-20}"
+  n=0
+  while [ "$n" -lt "$max_polls" ]; do
+    for f in $(asvd_result_paths); do
+      [ -s "$f" ] || continue
+      if /system/bin/grep -qx "request_id=$request_id" "$f" 2>/dev/null; then
+        echo "$f"
+        return 0
+      fi
+    done
+    n=$((n + 1))
+    /system/bin/sleep 0.25 2>/dev/null || /system/bin/sleep 1
+  done
+  return 1
+}
+
+asvd_validate_list_result_file() {
+  f="$1"
+  request_id="${2:-}"
+  actual_action="$(asvd_result_action_from_file "$f")"
+  actual_short="$(asvd_short_action "$actual_action")"
+  device_blocks="$(asvd_device_block_count_from_file "$f")"
+  bonded_count="$(/system/bin/grep -m1 '^bonded_count=' "$f" 2>/dev/null | /system/bin/sed 's/^bonded_count=//' || true)"
+  actual_request_id="$(asvd_result_request_id_from_file "$f")"
+  [ -n "$bonded_count" ] || bonded_count="unknown"
+
+  if [ "$actual_action" != "$PKG.LIST" ]; then
+    echo "FAIL stale_or_wrong_result action=$actual_short expected=LIST"
+    echo "result_file=$f"
+    echo "device_blocks=$device_blocks"
+    echo "bonded_count_seen=$bonded_count"
+    return 1
+  fi
+  if [ -n "$request_id" ] && [ "$actual_request_id" != "$request_id" ]; then
+    echo "FAIL stale_or_wrong_result request_id_mismatch expected=$request_id actual=${actual_request_id:-missing}"
+    echo "result_file=$f"
+    echo "action=$actual_short"
+    echo "device_blocks=$device_blocks"
+    echo "bonded_count_seen=$bonded_count"
+    return 1
+  fi
+  if ! /system/bin/grep -qx 'RESULT: ASVD_BT_TYPE_HELPER_LIST_DONE' "$f" 2>/dev/null; then
+    echo "FAIL list_result_marker_missing action=$actual_short expected=LIST"
+    echo "result_file=$f"
+    echo "device_blocks=$device_blocks"
+    echo "bonded_count_seen=$bonded_count"
+    return 1
+  fi
+  if [ "$device_blocks" -le 0 ]; then
+    echo "FAIL no_devices_parsed action=$actual_short expected=LIST"
+    echo "result_file=$f"
+    echo "device_blocks=$device_blocks"
+    echo "bonded_count_seen=$bonded_count"
+    return 1
+  fi
+  echo "PASS list_result_valid action=LIST device_blocks=$device_blocks bonded_count_seen=$bonded_count"
+  return 0
+}
+
+asvd_validate_get_result_file() {
+  f="$1"
+  request_id="${2:-}"
+  actual_action="$(asvd_result_action_from_file "$f")"
+  actual_short="$(asvd_short_action "$actual_action")"
+  actual_request_id="$(asvd_result_request_id_from_file "$f")"
+  matches="$(/system/bin/grep -m1 '^target_matches=' "$f" 2>/dev/null | /system/bin/sed 's/^target_matches=//' || true)"
+  current_type="$(/system/bin/grep -m1 '^metadata_17_before=' "$f" 2>/dev/null | /system/bin/sed 's/^metadata_17_before=//' || true)"
+  [ -n "$matches" ] || matches="0"
+  [ -n "$current_type" ] || current_type="unknown"
+
+  if [ "$actual_action" != "$PKG.GET" ]; then
+    echo "FAIL stale_or_wrong_result action=$actual_short expected=GET"
+    echo "result_file=$f"
+    echo "target_matches=$matches"
+    echo "metadata_17_before=$current_type"
+    return 1
+  fi
+  if [ -n "$request_id" ] && [ "$actual_request_id" != "$request_id" ]; then
+    echo "FAIL stale_or_wrong_result request_id_mismatch expected=$request_id actual=${actual_request_id:-missing}"
+    echo "result_file=$f"
+    echo "action=$actual_short"
+    echo "target_matches=$matches"
+    echo "metadata_17_before=$current_type"
+    return 1
+  fi
+  if ! /system/bin/grep -qx 'RESULT: ASVD_BT_TYPE_HELPER_GET_DONE' "$f" 2>/dev/null; then
+    echo "FAIL get_result_marker_missing action=$actual_short expected=GET"
+    echo "result_file=$f"
+    echo "target_matches=$matches"
+    echo "metadata_17_before=$current_type"
+    return 1
+  fi
+  if [ "$matches" != "1" ]; then
+    echo "FAIL get_target_not_unique_or_missing matches=$matches"
+    echo "result_file=$f"
+    echo "metadata_17_before=$current_type"
+    return 1
+  fi
+  echo "PASS get_result_valid action=GET target_matches=$matches metadata_17_before=$current_type"
+  return 0
+}
+
+asvd_explain_get_wait_failure() {
+  stale_file="$(asvd_find_any_result_file || true)"
+  if [ -n "$stale_file" ]; then
+    actual_action="$(asvd_result_action_from_file "$stale_file")"
+    actual_short="$(asvd_short_action "$actual_action")"
+    matches="$(/system/bin/grep -m1 '^target_matches=' "$stale_file" 2>/dev/null | /system/bin/sed 's/^target_matches=//' || true)"
+    current_type="$(/system/bin/grep -m1 '^metadata_17_before=' "$stale_file" 2>/dev/null | /system/bin/sed 's/^metadata_17_before=//' || true)"
+    [ -n "$matches" ] || matches="0"
+    [ -n "$current_type" ] || current_type="unknown"
+    echo "FAIL stale_or_wrong_result action=$actual_short expected=GET"
+    echo "result_file=$stale_file"
+    echo "target_matches=$matches"
+    echo "metadata_17_before=$current_type"
+  else
+    echo "FAIL get_result_timeout expected=GET"
+    echo "result_file=missing"
+    echo "target_matches=0"
+    echo "metadata_17_before=unknown"
+  fi
+}
+
+asvd_explain_list_wait_failure() {
+  stale_file="$(asvd_find_any_result_file || true)"
+  if [ -n "$stale_file" ]; then
+    actual_action="$(asvd_result_action_from_file "$stale_file")"
+    actual_short="$(asvd_short_action "$actual_action")"
+    device_blocks="$(asvd_device_block_count_from_file "$stale_file")"
+    bonded_count="$(/system/bin/grep -m1 '^bonded_count=' "$stale_file" 2>/dev/null | /system/bin/sed 's/^bonded_count=//' || true)"
+    [ -n "$bonded_count" ] || bonded_count="unknown"
+    echo "FAIL stale_or_wrong_result action=$actual_short expected=LIST"
+    echo "result_file=$stale_file"
+    echo "device_blocks=$device_blocks"
+    echo "bonded_count_seen=$bonded_count"
+  else
+    echo "FAIL list_result_timeout expected=LIST"
+    echo "result_file=missing"
+    echo "device_blocks=0"
+    echo "bonded_count_seen=unknown"
+  fi
 }
 EOFG
 
@@ -883,7 +1224,7 @@ while [ "$#" -gt 0 ]; do
  done
 
 echo "== preflight =="
-/system/bin/pm path "$PKG" || true
+asvd_pm_path "$PKG" || true
 
 echo
 echo "== clear old result/log =="
@@ -893,11 +1234,24 @@ echo
 echo "== broadcast list =="
 NAME=""
 MAC=""
+REQUEST_ID="$(asvd_make_request_id)"
+echo "request_id=$REQUEST_ID"
 asvd_broadcast "$PKG.LIST" || true
 
 echo
-echo "== wait =="
-/system/bin/sleep 2
+echo "== wait/list validate =="
+RESULT_FILE="$(asvd_wait_result_file "$PKG.LIST" "$REQUEST_ID" 20 || true)"
+if [ -z "$RESULT_FILE" ]; then
+  asvd_explain_list_wait_failure
+  asvd_dump_results
+  echo "RESULT: ASVD_BT_TYPE_HELPER_LIST_WRAPPER_FAIL"
+  exit 1
+fi
+if ! asvd_validate_list_result_file "$RESULT_FILE" "$REQUEST_ID"; then
+  asvd_dump_results
+  echo "RESULT: ASVD_BT_TYPE_HELPER_LIST_WRAPPER_FAIL"
+  exit 1
+fi
 asvd_dump_results
 
 echo
@@ -911,7 +1265,7 @@ set -eu
 asvd_target_args "$@"
 
 echo "== preflight =="
-/system/bin/pm path "$PKG" || true
+asvd_pm_path "$PKG" || true
 
 echo
 echo "== target =="
@@ -924,12 +1278,39 @@ asvd_clear
 
 echo
 echo "== broadcast get =="
+REQUEST_ID="$(asvd_make_request_id)"
+echo "request_id=$REQUEST_ID"
 asvd_broadcast "$PKG.GET" || true
 
 echo
-echo "== wait =="
-/system/bin/sleep 2
+echo "== wait/get validate =="
+RESULT_FILE="$(asvd_wait_result_file "$PKG.GET" "$REQUEST_ID" 20 || true)"
+if [ -z "$RESULT_FILE" ]; then
+  asvd_explain_get_wait_failure
+  asvd_dump_results
+  CURRENT_TYPE="unknown"
+  REQ="$(asvd_state_existing requested_type || true)"
+  [ -n "$REQ" ] || REQ="GET"
+  asvd_state_write "${NAME:-H222}" "$REQ" "FAIL" "get_result_timeout_or_missing" "$CURRENT_TYPE" "$(asvd_state_existing previous_type || true)" "metadata_api" "$(asvd_state_existing asvd_apply_now_triggered || echo 0)"
+  echo "RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_FAIL"
+  exit 1
+fi
+if ! asvd_validate_get_result_file "$RESULT_FILE" "$REQUEST_ID"; then
+  asvd_dump_results
+  CURRENT_TYPE="$(asvd_result_value metadata_17_before || true)"
+  [ -n "$CURRENT_TYPE" ] || CURRENT_TYPE="unknown"
+  REQ="$(asvd_state_existing requested_type || true)"
+  [ -n "$REQ" ] || REQ="GET"
+  asvd_state_write "${NAME:-H222}" "$REQ" "FAIL" "get_result_invalid" "$CURRENT_TYPE" "$(asvd_state_existing previous_type || true)" "metadata_api" "$(asvd_state_existing asvd_apply_now_triggered || echo 0)"
+  echo "RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_FAIL"
+  exit 1
+fi
 asvd_dump_results
+CURRENT_TYPE="$(asvd_result_value metadata_17_before || true)"
+[ -n "$CURRENT_TYPE" ] || CURRENT_TYPE="unknown"
+REQ="$(asvd_state_existing requested_type || true)"
+[ -n "$REQ" ] || REQ="GET"
+asvd_state_write "${NAME:-H222}" "$REQ" "PASS" "" "$CURRENT_TYPE" "$(asvd_state_existing previous_type || true)" "metadata_api" "$(asvd_state_existing asvd_apply_now_triggered || echo 0)"
 
 echo
 echo "RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_DONE"
@@ -989,6 +1370,8 @@ set -eu
 TYPE=""
 CONFIRM=""
 DRY_RUN="0"
+APPLY_NOW="0"
+ALLOW_WATCH_SPEAKER="0"
 PASS_ARGS=""
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -1002,9 +1385,16 @@ while [ "$#" -gt 0 ]; do
     --dry-run)
       DRY_RUN="1"
       ;;
+    --asvd-apply-now)
+      APPLY_NOW="1"
+      ;;
+    --allow-watch-speaker)
+      ALLOW_WATCH_SPEAKER="1"
+      ;;
     --help|-h)
-      echo "Usage: $0 [H222|--name NAME|--mac MAC] --type car|speaker|headphones|clear [--confirm-set] [--dry-run]"
-      echo "Dry-run resolves the target and planned metadata but does not write."
+      echo "Usage: $0 [H222|--name NAME|--mac MAC] --type TYPE [--confirm-set] [--dry-run] [--asvd-apply-now] [--allow-watch-speaker]"
+      echo "Types: car, speaker, headset/headphones, untethered-headset/earbuds/tws, watch, stylus, hearingaid, default, clear"
+      echo "Dry-run resolves the target and planned metadata but does not write. --asvd-apply-now is never default."
       exit 0
       ;;
     *)
@@ -1013,11 +1403,25 @@ while [ "$#" -gt 0 ]; do
   esac
   shift
 done
-case "$TYPE" in
-  car|carkit|auto|Carkit) TYPE_VALUE="Carkit" ;;
-  speaker|Speaker|lautsprecher|Lautsprecher) TYPE_VALUE="Speaker" ;;
-  headphones|headphone|Headphones|Kopfhörer|kopfhoerer) TYPE_VALUE="Headphones" ;;
-  clear|reset|null)
+normalize_type_shell() {
+  t="$(echo "${1:-}" | /system/bin/tr '[:upper:]_' '[:lower:]-')"
+  case "$t" in
+    car|carkit|auto|car-kit) echo "Carkit" ;;
+    speaker|lautsprecher) echo "Speaker" ;;
+    headset|headsets|headphones|headphone|kopfhoerer|kopfhörer) echo "Headset" ;;
+    untethered-headset|untethered|earbuds|earbud|buds|tws|true-wireless) echo "Untethered Headset" ;;
+    watch|smartwatch|wearable) echo "Watch" ;;
+    stylus|pen|stift) echo "Stylus" ;;
+    hearingaid|hearing-aid|hearing-aids|hearing_aid) echo "HearingAid" ;;
+    default|android-default|reset-default) echo "Default" ;;
+    clear|reset|null) echo "__CLEAR__" ;;
+    "") echo "__MISSING__" ;;
+    *) echo "__UNSUPPORTED__" ;;
+  esac
+}
+TYPE_VALUE="$(normalize_type_shell "$TYPE")"
+case "$TYPE_VALUE" in
+  __CLEAR__)
     if [ "$DRY_RUN" = "1" ]; then
       # shellcheck disable=SC2086
       eval "exec /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-clear-type.sh $PASS_ARGS --dry-run"
@@ -1026,38 +1430,106 @@ case "$TYPE" in
       eval "exec /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-clear-type.sh $PASS_ARGS --confirm-clear"
     fi
     ;;
-  "") echo "missing --type car|speaker|headphones|clear"; echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_MISSING_TYPE"; exit 2 ;;
-  *) echo "unsupported_type=$TYPE"; echo "Supported: car, speaker, headphones, clear"; echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_UNSUPPORTED"; exit 2 ;;
+  __MISSING__)
+    echo "missing --type TYPE"
+    echo "Supported: car, speaker, headset/headphones, untethered-headset/earbuds/tws, watch, stylus, hearingaid, default, clear"
+    echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_MISSING_TYPE"
+    exit 2
+    ;;
+  __UNSUPPORTED__)
+    echo "unsupported_type=$TYPE"
+    echo "Supported: car, speaker, headset/headphones, untethered-headset/earbuds/tws, watch, stylus, hearingaid, default, clear"
+    echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_UNSUPPORTED"
+    exit 2
+    ;;
 esac
 # shellcheck disable=SC2086
 eval "asvd_target_args $PASS_ARGS"
+
+save_backup() {
+  BACKUP_DIR="/data/adb/modules/asvd-bt-type-helper/backups"
+  /system/bin/mkdir -p "$BACKUP_DIR"
+  /system/bin/chmod 0700 "$BACKUP_DIR" 2>/dev/null || true
+  TS="$(/system/bin/date +%Y%m%d_%H%M%S 2>/dev/null || echo unknown)"
+  BACKUP_FILE="$BACKUP_DIR/metadata17-before-set-$TS.txt"
+  {
+    echo "backup_format=asvd-bt-type-helper-metadata17-v1"
+    echo "action=set"
+    echo "planned_metadata_17=$TYPE_VALUE"
+    echo "target_name=${NAME:-}"
+    if [ -n "${MAC:-}" ]; then echo "target_mac=<redacted>"; else echo "target_mac="; fi
+    echo "created_at=$TS"
+    echo
+    echo "== before =="
+    if [ -n "${MAC:-}" ]; then
+      /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" 2>/dev/null || true
+    else
+      /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "${NAME:-H222}" 2>/dev/null || true
+    fi
+  } > "$BACKUP_FILE"
+  /system/bin/chmod 0600 "$BACKUP_FILE" 2>/dev/null || true
+  echo "backup_saved=$BACKUP_FILE"
+}
+
+target_display_name() {
+  if [ -n "${NAME:-}" ]; then echo "$NAME"; else echo "unknown"; fi
+}
 
 if [ "$DRY_RUN" = "1" ]; then
   echo "== dry-run set type =="
   echo "DRY_RUN=yes"
   echo "planned_action=SET_TYPE"
   echo "planned_metadata_17=$TYPE_VALUE"
+  case "$TYPE_VALUE" in Carkit) echo "support_status=verified_reference" ;; *) echo "support_status=experimental_feedback_needed" ;; esac
   echo "write_performed=no"
   echo
   echo "== target =="
+  echo "target_selector=$( [ -n "${MAC:-}" ] && echo mac || echo name )"
   echo "name=${NAME:-}"
   if [ -n "${MAC:-}" ]; then echo "mac=<provided>"; else echo "mac="; fi
   echo
   echo "== current target state =="
+  DRY_TMP="/data/local/tmp/asvd-bt-type-helper-set-dryrun-get.txt"
   if [ -n "${MAC:-}" ]; then
-    /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" 2>/dev/null
+    /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" > "$DRY_TMP" 2>/dev/null || true
   else
-    /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "${NAME:-H222}" 2>/dev/null
-  fi     | /system/bin/grep -E "target_matches=|name=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER_GET_DONE|RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_DONE" || true
+    /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "${NAME:-H222}" > "$DRY_TMP" 2>/dev/null || true
+  fi
+  /system/bin/grep -E "target_matches=|name=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER_GET_DONE|RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_DONE" "$DRY_TMP" || true
+  MATCHES="$(/system/bin/grep -m1 '^target_matches=' "$DRY_TMP" 2>/dev/null | /system/bin/sed 's/^target_matches=//' || true)"
+  DETECTED_NAME="$(/system/bin/grep -m1 '^name=' "$DRY_TMP" 2>/dev/null | /system/bin/sed 's/^name=//' || true)"
+  PREVIOUS_TYPE="$(/system/bin/grep -m1 '^metadata_17_before=' "$DRY_TMP" 2>/dev/null | /system/bin/sed 's/^metadata_17_before=//' || true)"
+  [ -n "$MATCHES" ] || MATCHES="0"
+  [ -n "$DETECTED_NAME" ] || DETECTED_NAME="unknown"
+  [ -n "$PREVIOUS_TYPE" ] || PREVIOUS_TYPE="unknown"
+  if [ "$MATCHES" != "1" ]; then
+    echo
+    echo "FAIL target_not_unique_or_missing matches=$MATCHES"
+    asvd_state_write "$DETECTED_NAME" "$TYPE_VALUE" "FAIL" "target_not_unique_or_missing" "$PREVIOUS_TYPE" "$PREVIOUS_TYPE" "metadata_api" "0"
+    echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_ABORTED_TARGET_NOT_UNIQUE"
+    exit 11
+  fi
+  if [ "$TYPE_VALUE" = "Speaker" ] && [ "$ALLOW_WATCH_SPEAKER" != "1" ]; then
+    case "$DETECTED_NAME:$PREVIOUS_TYPE" in
+      *Watch*|*watch*)
+        echo
+        echo "FAIL refused_watch_to_speaker_without_override"
+        asvd_state_write "$DETECTED_NAME" "$TYPE_VALUE" "FAIL" "refused_watch_to_speaker_without_override" "$PREVIOUS_TYPE" "$PREVIOUS_TYPE" "metadata_api" "0"
+        echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_ABORTED_PLAUSIBILITY_WATCH"
+        exit 12
+        ;;
+    esac
+  fi
   echo
+  asvd_state_write "$DETECTED_NAME" "$TYPE_VALUE" "DRY_RUN" "" "$PREVIOUS_TYPE" "$PREVIOUS_TYPE" "metadata_api" "0"
   echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_DRY_RUN_DONE"
   exit 0
 fi
 
 if [ "$CONFIRM" != "--confirm-set" ]; then
   echo "Refusing to set without explicit confirmation."
-  echo "Use: $0 [H222|--name NAME|--mac MAC] --type car|speaker|headphones --confirm-set"
-  echo "Dry-run: $0 [H222|--name NAME|--mac MAC] --type car|speaker|headphones --dry-run"
+  echo "Use: $0 [H222|--name NAME|--mac MAC] --type TYPE --confirm-set"
+  echo "Dry-run: $0 [H222|--name NAME|--mac MAC] --type TYPE --dry-run"
   echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_CONFIRM_REQUIRED"
   exit 2
 fi
@@ -1067,9 +1539,49 @@ echo "== preflight =="
 
 echo
 echo "== target =="
+echo "target_selector=$( [ -n "${MAC:-}" ] && echo mac || echo name )"
 echo "name=${NAME:-}"
 if [ -n "${MAC:-}" ]; then echo "mac=<provided>"; else echo "mac="; fi
 echo "type_value=$TYPE_VALUE"
+case "$TYPE_VALUE" in Carkit) echo "support_status=verified_reference" ;; *) echo "support_status=experimental_feedback_needed" ;; esac
+
+echo
+echo "== strict target validation =="
+PRE_TMP="/data/local/tmp/asvd-bt-type-helper-set-preflight-get.txt"
+if [ -n "${MAC:-}" ]; then
+  /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" > "$PRE_TMP" 2>/dev/null || true
+else
+  /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "${NAME:-H222}" > "$PRE_TMP" 2>/dev/null || true
+fi
+/system/bin/grep -E "target_matches=|name=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER" "$PRE_TMP" || true
+MATCHES="$(/system/bin/grep -m1 '^target_matches=' "$PRE_TMP" 2>/dev/null | /system/bin/sed 's/^target_matches=//' || true)"
+DETECTED_NAME="$(/system/bin/grep -m1 '^name=' "$PRE_TMP" 2>/dev/null | /system/bin/sed 's/^name=//' || true)"
+PRECHECK_TYPE="$(/system/bin/grep -m1 '^metadata_17_before=' "$PRE_TMP" 2>/dev/null | /system/bin/sed 's/^metadata_17_before=//' || true)"
+[ -n "$MATCHES" ] || MATCHES="0"
+[ -n "$DETECTED_NAME" ] || DETECTED_NAME="unknown"
+[ -n "$PRECHECK_TYPE" ] || PRECHECK_TYPE="unknown"
+if [ "$MATCHES" != "1" ]; then
+  echo "FAIL target_not_unique_or_missing matches=$MATCHES"
+  asvd_state_write "$DETECTED_NAME" "$TYPE_VALUE" "FAIL" "target_not_unique_or_missing" "$PRECHECK_TYPE" "$PRECHECK_TYPE" "metadata_api" "0"
+  echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_ABORTED_TARGET_NOT_UNIQUE"
+  exit 11
+fi
+if [ "$TYPE_VALUE" = "Speaker" ] && [ "$ALLOW_WATCH_SPEAKER" != "1" ]; then
+  case "$DETECTED_NAME:$PRECHECK_TYPE" in
+    *Watch*|*watch*)
+      echo "FAIL refused_watch_to_speaker_without_override"
+      asvd_state_write "$DETECTED_NAME" "$TYPE_VALUE" "FAIL" "refused_watch_to_speaker_without_override" "$PRECHECK_TYPE" "$PRECHECK_TYPE" "metadata_api" "0"
+      echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_ABORTED_PLAUSIBILITY_WATCH"
+      exit 12
+      ;;
+  esac
+fi
+
+echo
+echo "== backup before write =="
+save_backup
+PREVIOUS_TYPE="$(/system/bin/grep -m1 '^metadata_17_before=' "$BACKUP_FILE" 2>/dev/null | /system/bin/sed 's/^metadata_17_before=//' || true)"
+[ -n "$PREVIOUS_TYPE" ] || PREVIOUS_TYPE="unknown"
 
 echo
 echo "== clear old result/log =="
@@ -1084,10 +1596,31 @@ echo "== wait =="
 /system/bin/sleep 2
 asvd_dump_results
 
+CURRENT_TYPE="$(asvd_result_value metadata_17_after || true)"
+[ -n "$CURRENT_TYPE" ] || CURRENT_TYPE="$TYPE_VALUE"
+STATE_RESULT="FAIL"
+STATE_ERROR="set_type_failed_or_unverified"
+if asvd_result_has "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_DONE"; then
+  STATE_RESULT="PASS"
+  STATE_ERROR=""
+fi
+ASVD_APPLY_TRIGGERED="0"
+if [ "$STATE_RESULT" = "PASS" ] && [ "$APPLY_NOW" = "1" ]; then
+  APPLY_NOW_SCRIPT="/data/adb/modules/audio-safe-volume-battery-aware/apply-now.sh"
+  if [ -x "$APPLY_NOW_SCRIPT" ] || [ -s "$APPLY_NOW_SCRIPT" ]; then
+    echo
+    echo "== optional ASVD apply-now =="
+    /system/bin/sh "$APPLY_NOW_SCRIPT" || true
+    ASVD_APPLY_TRIGGERED="1"
+  else
+    echo "asvd_apply_now_skipped=missing_apply_now_script"
+  fi
+fi
+asvd_state_write "$(target_display_name)" "$TYPE_VALUE" "$STATE_RESULT" "$STATE_ERROR" "$CURRENT_TYPE" "$PREVIOUS_TYPE" "metadata_api" "$ASVD_APPLY_TRIGGERED"
+
 echo
 echo "RESULT: ASVD_BT_TYPE_HELPER_SET_TYPE_WRAPPER_DONE"
 EOFG
-
 
 cat > "$MOD/helper-clear-type.sh" <<'EOFG'
 #!/system/bin/sh
@@ -1112,6 +1645,35 @@ done
 # shellcheck disable=SC2086
 eval "asvd_target_args $ARGS"
 
+target_display_name() {
+  if [ -n "${NAME:-}" ]; then echo "$NAME"; else echo "unknown"; fi
+}
+
+save_backup() {
+  BACKUP_DIR="/data/adb/modules/asvd-bt-type-helper/backups"
+  /system/bin/mkdir -p "$BACKUP_DIR"
+  /system/bin/chmod 0700 "$BACKUP_DIR" 2>/dev/null || true
+  TS="$(/system/bin/date +%Y%m%d_%H%M%S 2>/dev/null || echo unknown)"
+  BACKUP_FILE="$BACKUP_DIR/metadata17-before-clear-$TS.txt"
+  {
+    echo "backup_format=asvd-bt-type-helper-metadata17-v1"
+    echo "action=clear"
+    echo "planned_metadata_17=null"
+    echo "target_name=${NAME:-}"
+    if [ -n "${MAC:-}" ]; then echo "target_mac=<redacted>"; else echo "target_mac="; fi
+    echo "created_at=$TS"
+    echo
+    echo "== before =="
+    if [ -n "${MAC:-}" ]; then
+      /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" 2>/dev/null || true
+    else
+      /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "${NAME:-H222}" 2>/dev/null || true
+    fi
+  } > "$BACKUP_FILE"
+  /system/bin/chmod 0600 "$BACKUP_FILE" 2>/dev/null || true
+  echo "backup_saved=$BACKUP_FILE"
+}
+
 if [ "$DRY_RUN" = "1" ]; then
   echo "== dry-run clear type =="
   echo "DRY_RUN=yes"
@@ -1120,16 +1682,33 @@ if [ "$DRY_RUN" = "1" ]; then
   echo "write_performed=no"
   echo
   echo "== target =="
+  echo "target_selector=$( [ -n "${MAC:-}" ] && echo mac || echo name )"
   echo "name=${NAME:-}"
   if [ -n "${MAC:-}" ]; then echo "mac=<provided>"; else echo "mac="; fi
   echo
   echo "== current target state =="
+  DRY_TMP="/data/local/tmp/asvd-bt-type-helper-clear-dryrun-get.txt"
   if [ -n "${MAC:-}" ]; then
-    /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" 2>/dev/null
+    /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" > "$DRY_TMP" 2>/dev/null || true
   else
-    /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "${NAME:-H222}" 2>/dev/null
-  fi     | /system/bin/grep -E "target_matches=|name=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER_GET_DONE|RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_DONE" || true
+    /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "${NAME:-H222}" > "$DRY_TMP" 2>/dev/null || true
+  fi
+  /system/bin/grep -E "target_matches=|name=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER_GET_DONE|RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_DONE" "$DRY_TMP" || true
+  MATCHES="$(/system/bin/grep -m1 '^target_matches=' "$DRY_TMP" 2>/dev/null | /system/bin/sed 's/^target_matches=//' || true)"
+  DETECTED_NAME="$(/system/bin/grep -m1 '^name=' "$DRY_TMP" 2>/dev/null | /system/bin/sed 's/^name=//' || true)"
+  PREVIOUS_TYPE="$(/system/bin/grep -m1 '^metadata_17_before=' "$DRY_TMP" 2>/dev/null | /system/bin/sed 's/^metadata_17_before=//' || true)"
+  [ -n "$MATCHES" ] || MATCHES="0"
+  [ -n "$DETECTED_NAME" ] || DETECTED_NAME="unknown"
+  [ -n "$PREVIOUS_TYPE" ] || PREVIOUS_TYPE="unknown"
+  if [ "$MATCHES" != "1" ]; then
+    echo
+    echo "FAIL target_not_unique_or_missing matches=$MATCHES"
+    asvd_state_write "$DETECTED_NAME" "clear" "FAIL" "target_not_unique_or_missing" "$PREVIOUS_TYPE" "$PREVIOUS_TYPE" "metadata_api" "0"
+    echo "RESULT: ASVD_BT_TYPE_HELPER_CLEAR_ABORTED_TARGET_NOT_UNIQUE"
+    exit 11
+  fi
   echo
+  asvd_state_write "$DETECTED_NAME" "clear" "DRY_RUN" "" "$PREVIOUS_TYPE" "$PREVIOUS_TYPE" "metadata_api" "0"
   echo "RESULT: ASVD_BT_TYPE_HELPER_CLEAR_DRY_RUN_DONE"
   exit 0
 fi
@@ -1147,8 +1726,37 @@ echo "== preflight =="
 
 echo
 echo "== target =="
+echo "target_selector=$( [ -n "${MAC:-}" ] && echo mac || echo name )"
 echo "name=${NAME:-}"
 if [ -n "${MAC:-}" ]; then echo "mac=<provided>"; else echo "mac="; fi
+
+echo
+echo "== strict target validation =="
+PRE_TMP="/data/local/tmp/asvd-bt-type-helper-clear-preflight-get.txt"
+if [ -n "${MAC:-}" ]; then
+  /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" > "$PRE_TMP" 2>/dev/null || true
+else
+  /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "${NAME:-H222}" > "$PRE_TMP" 2>/dev/null || true
+fi
+/system/bin/grep -E "target_matches=|name=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER" "$PRE_TMP" || true
+MATCHES="$(/system/bin/grep -m1 '^target_matches=' "$PRE_TMP" 2>/dev/null | /system/bin/sed 's/^target_matches=//' || true)"
+DETECTED_NAME="$(/system/bin/grep -m1 '^name=' "$PRE_TMP" 2>/dev/null | /system/bin/sed 's/^name=//' || true)"
+PRECHECK_TYPE="$(/system/bin/grep -m1 '^metadata_17_before=' "$PRE_TMP" 2>/dev/null | /system/bin/sed 's/^metadata_17_before=//' || true)"
+[ -n "$MATCHES" ] || MATCHES="0"
+[ -n "$DETECTED_NAME" ] || DETECTED_NAME="unknown"
+[ -n "$PRECHECK_TYPE" ] || PRECHECK_TYPE="unknown"
+if [ "$MATCHES" != "1" ]; then
+  echo "FAIL target_not_unique_or_missing matches=$MATCHES"
+  asvd_state_write "$DETECTED_NAME" "clear" "FAIL" "target_not_unique_or_missing" "$PRECHECK_TYPE" "$PRECHECK_TYPE" "metadata_api" "0"
+  echo "RESULT: ASVD_BT_TYPE_HELPER_CLEAR_ABORTED_TARGET_NOT_UNIQUE"
+  exit 11
+fi
+
+echo
+echo "== backup before clear =="
+save_backup
+PREVIOUS_TYPE="$(/system/bin/grep -m1 '^metadata_17_before=' "$BACKUP_FILE" 2>/dev/null | /system/bin/sed 's/^metadata_17_before=//' || true)"
+[ -n "$PREVIOUS_TYPE" ] || PREVIOUS_TYPE="unknown"
 
 echo
 echo "== clear old result/log =="
@@ -1163,6 +1771,16 @@ echo "== wait =="
 /system/bin/sleep 2
 asvd_dump_results
 
+CURRENT_TYPE="$(asvd_result_value metadata_17_after || true)"
+[ -n "$CURRENT_TYPE" ] || CURRENT_TYPE="null"
+STATE_RESULT="FAIL"
+STATE_ERROR="clear_failed_or_unverified"
+if asvd_result_has "RESULT: ASVD_BT_TYPE_HELPER_CLEAR_DONE"; then
+  STATE_RESULT="PASS"
+  STATE_ERROR=""
+fi
+asvd_state_write "$(target_display_name)" "clear" "$STATE_RESULT" "$STATE_ERROR" "$CURRENT_TYPE" "$PREVIOUS_TYPE" "metadata_api" "0"
+
 echo
 echo "RESULT: ASVD_BT_TYPE_HELPER_CLEAR_WRAPPER_DONE"
 EOFG
@@ -1170,111 +1788,670 @@ EOFG
 cat > "$MOD/helper-report.sh" <<'EOFG'
 #!/system/bin/sh
 set -eu
-. /data/adb/modules/asvd-bt-type-helper/helper-common.sh
-asvd_target_args "$@"
+MOD="/data/adb/modules/asvd-bt-type-helper"
+NAME="H222"
+SHOW_MAC="0"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --name) shift; NAME="${1:-H222}" ;;
+    --show-mac) SHOW_MAC="1" ;;
+    --help|-h)
+      echo "Usage: $0 [--name NAME] [--show-mac]"
+      echo "Public-safe report by default. Use --show-mac only locally."
+      exit 0
+      ;;
+    *) echo "unknown_arg=$1"; exit 2 ;;
+  esac
+  shift
+done
 
-echo "== ASVD BT Type Helper report =="
-/system/bin/date
-
+echo "== ASVD BT Type Helper support report =="
+echo "safe_to_paste_publicly=$([ "$SHOW_MAC" = "1" ] && echo no || echo yes)"
+echo "mac_redaction=$([ "$SHOW_MAC" = "1" ] && echo off || echo on)"
+echo "report_version=0.6.2"
+echo "android_release=$(/system/bin/getprop ro.build.version.release 2>/dev/null || echo unknown)"
+echo "android_sdk=$(/system/bin/getprop ro.build.version.sdk 2>/dev/null || echo unknown)"
+echo "build_id=$(/system/bin/getprop ro.build.id 2>/dev/null || echo unknown)"
+echo "recommended_asvd=1.2.9_or_newer"
+echo "minimum_known_compatible_asvd_line=1.2.7+"
+echo "contract_version=bt-helper-env-v1"
+echo "contract_changed=no"
 echo
-echo "== device =="
-echo "manufacturer=$(/system/bin/getprop ro.product.manufacturer 2>/dev/null || true)"
-echo "brand=$(/system/bin/getprop ro.product.brand 2>/dev/null || true)"
-echo "model=$(/system/bin/getprop ro.product.model 2>/dev/null || true)"
-echo "device=$(/system/bin/getprop ro.product.device 2>/dev/null || true)"
-echo "android_release=$(/system/bin/getprop ro.build.version.release 2>/dev/null || true)"
-echo "android_sdk=$(/system/bin/getprop ro.build.version.sdk 2>/dev/null || true)"
 
-echo
-echo "== magisk =="
-if [ -x /debug_ramdisk/magisk ]; then /debug_ramdisk/magisk -V 2>/dev/null || true; /debug_ramdisk/magisk -v 2>/dev/null || true; else echo "magisk_bin=not_found"; fi
-
-echo
-echo "== package =="
-/system/bin/pm path "$PKG" || true
-/system/bin/dumpsys package "$PKG" 2>/dev/null \
-  | /system/bin/grep -Ei "versionName|versionCode|PRIVILEGED|BLUETOOTH|granted|User 0" \
-  | /system/bin/sed -n "1,180p" || true
-
-echo
-echo "== helper target get =="
-if [ -n "${MAC:-}" ]; then
-  /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" 2>/dev/null \
-    | /system/bin/grep -E "target_name=|target_mac=|target_matches=|name=|address=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER" || true
-elif [ -n "${NAME:-}" ]; then
-  /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "$NAME" 2>/dev/null \
-    | /system/bin/grep -E "target_name=|target_mac=|target_matches=|name=|address=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER" || true
+echo "== module =="
+if [ -s "$MOD/module.prop" ]; then
+  /system/bin/sed -n 's/^id=/id=/p;s/^version=/version=/p;s/^versionCode=/versionCode=/p;s/^updateJson=/updateJson=/p' "$MOD/module.prop"
 else
-  /data/adb/modules/asvd-bt-type-helper/helper-get.sh 2>/dev/null \
-    | /system/bin/grep -E "target_name=|target_mac=|target_matches=|name=|address=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER" || true
+  echo "module_prop_missing=yes"
+fi
+/system/bin/pm path org.asvd.bttypehelper 2>/dev/null | /system/bin/sed -n '1,4p' || true
+/system/bin/dumpsys package org.asvd.bttypehelper 2>/dev/null | /system/bin/grep -E 'versionCode=|versionName=' | /system/bin/head -n 8 || true
+
+echo
+
+echo "== ASVD companion state =="
+if [ -s /data/adb/asvd/bt-helper.env ]; then
+  /system/bin/sed -E 's/([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}/<BT_MAC>/g' /data/adb/asvd/bt-helper.env | /system/bin/sed -n '1,80p'
+else
+  echo "bt_helper_env_missing=yes"
 fi
 
 echo
+
+echo "== env schema verify =="
+/system/bin/sh "$MOD/helper-env-verify.sh" 2>&1 || true
+
+echo
+
+echo "== target GET =="
+if [ "$SHOW_MAC" = "1" ]; then
+  /system/bin/sh "$MOD/helper-get.sh" --name "$NAME" --show-mac 2>&1 | /system/bin/grep -E 'target_matches=|name=|address=|metadata_17_before=|PASS get_result_valid|RESULT: ASVD_BT_TYPE_HELPER|FAIL ' || true
+else
+  /system/bin/sh "$MOD/helper-get.sh" --name "$NAME" 2>&1 | /system/bin/grep -E 'target_matches=|name=|address=|metadata_17_before=|PASS get_result_valid|RESULT: ASVD_BT_TYPE_HELPER|FAIL ' || true
+fi
+
+echo
+
+echo "== doctor summary =="
+/system/bin/sh "$MOD/helper-doctor.sh" 2>&1 | /system/bin/grep -E 'android_release=|android_sdk=|recommended_asvd=|contract_version=|PASS |WARN |FAIL |RESULT: ASVD_BT_TYPE_HELPER_DOCTOR' | /system/bin/sed -n '1,220p' || true
+
+echo
+
 echo "RESULT: ASVD_BT_TYPE_HELPER_REPORT_DONE"
+
 EOFG
 
 cat > "$MOD/helper-debug.sh" <<'EOFG'
 #!/system/bin/sh
 set -eu
-
-case " $* " in
-  *" --show-mac "*)
-    echo "Refusing --show-mac for public debug output."
-    echo "Use helper-list.sh --show-mac only locally."
-    echo "RESULT: ASVD_BT_TYPE_HELPER_DEBUG_REFUSED_RAW_MAC"
-    exit 2
-    ;;
-esac
-
-OUT_DIR="/storage/emulated/0/Download"
-STAMP="$(/system/bin/date +%Y%m%d_%H%M%S 2>/dev/null || echo now)"
-OUT="$OUT_DIR/ASVD-BT-Type-Helper-debug-$STAMP.txt"
 MOD="/data/adb/modules/asvd-bt-type-helper"
-PKG="org.asvd.bttypehelper"
+NAME="H222"
+SHOW_MAC="0"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --name) shift; NAME="${1:-H222}" ;;
+    --show-mac) SHOW_MAC="1" ;;
+    --help|-h)
+      echo "Usage: $0 [--name NAME] [--show-mac]"
+      exit 0
+      ;;
+    *) echo "unknown_arg=$1"; exit 2 ;;
+  esac
+  shift
+done
+if [ "$SHOW_MAC" = "1" ]; then
+  /system/bin/sh "$MOD/helper-report.sh" --name "$NAME" --show-mac
+else
+  /system/bin/sh "$MOD/helper-report.sh" --name "$NAME"
+fi
+echo "safe_to_paste_publicly=$([ "$SHOW_MAC" = "1" ] && echo no || echo yes)"
+echo "RESULT: ASVD_BT_TYPE_HELPER_DEBUG_DONE"
+
+EOFG
+
+
+cat > "$MOD/helper-restore-last.sh" <<'EOFG'
+#!/system/bin/sh
+set -eu
+MOD="/data/adb/modules/asvd-bt-type-helper"
+BACKUP_DIR="$MOD/backups"
+CONFIRM=""
+DRY_RUN="0"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --confirm-restore) CONFIRM="--confirm-restore" ;;
+    --dry-run) DRY_RUN="1" ;;
+    --help|-h)
+      echo "Usage: $0 [--dry-run] [--confirm-restore]"
+      exit 0
+      ;;
+    *) echo "unknown_arg=$1"; exit 2 ;;
+  esac
+  shift
+done
+LAST="$(/system/bin/ls -1t "$BACKUP_DIR"/metadata17-before-*.txt 2>/dev/null | /system/bin/head -n 1 || true)"
+[ -s "$LAST" ] || { echo "FAIL no_backup_found=$BACKUP_DIR"; echo "RESULT: ASVD_BT_TYPE_HELPER_RESTORE_LAST_FAIL"; exit 1; }
+META="$(/system/bin/grep -m1 '^metadata_17_before=' "$LAST" | /system/bin/sed 's/^metadata_17_before=//' || true)"
+MAC="$(/system/bin/grep -m1 '^target_mac=' "$LAST" | /system/bin/sed 's/^target_mac=//' || true)"
+NAME="$(/system/bin/grep -m1 '^target_name=' "$LAST" | /system/bin/sed 's/^target_name=//' || true)"
+if [ -z "$NAME" ]; then
+  NAME="$(/system/bin/grep -m1 '^name=' "$LAST" | /system/bin/sed 's/^name=//' || true)"
+fi
+
+echo "== restore last metadata_17 backup =="
+echo "backup=$LAST"
+echo "target_name=${NAME:-}"
+if [ -n "$MAC" ]; then echo "target_mac=<stored>"; else echo "target_mac="; fi
+echo "restore_metadata_17=${META:-null}"
+if [ "$DRY_RUN" = "1" ]; then
+  echo "DRY_RUN=yes"
+  echo "write_performed=no"
+  echo "RESULT: ASVD_BT_TYPE_HELPER_RESTORE_LAST_DRY_RUN_DONE"
+  exit 0
+fi
+[ "$CONFIRM" = "--confirm-restore" ] || { echo "Refusing to restore without --confirm-restore"; echo "RESULT: ASVD_BT_TYPE_HELPER_RESTORE_LAST_CONFIRM_REQUIRED"; exit 2; }
+if [ "$META" = "null" ] || [ -z "$META" ]; then
+  if [ -n "$MAC" ]; then exec /system/bin/sh "$MOD/helper-clear-type.sh" --mac "$MAC" --confirm-clear; fi
+  exec /system/bin/sh "$MOD/helper-clear-type.sh" --name "${NAME:-H222}" --confirm-clear
+else
+  if [ -n "$MAC" ]; then exec /system/bin/sh "$MOD/helper-set-type.sh" --mac "$MAC" --type "$META" --confirm-set; fi
+  exec /system/bin/sh "$MOD/helper-set-type.sh" --name "${NAME:-H222}" --type "$META" --confirm-set
+fi
+EOFG
+
+cat > "$MOD/helper-compare-types.sh" <<'EOFG'
+#!/system/bin/sh
+set -eu
+MOD="/data/adb/modules/asvd-bt-type-helper"
+TMP="/data/local/tmp/asvd-compare-types.txt"
+/system/bin/sh "$MOD/helper-list.sh" > "$TMP" 2>&1 || true
+echo "== ASVD BT Type Helper metadata_17 type overview =="
+echo "dedupe_names=yes"
+/system/bin/awk '
+  /^name=/ { name=substr($0,6); next }
+  /^metadata_17=/ {
+    meta=substr($0,13); if (meta == "") meta="null";
+    if (name == "") name="<unknown>";
+    key=meta SUBSEP name;
+    if (!(key in seen)) {
+      seen[key]=1;
+      item[meta]=item[meta] "\n- " name;
+      count[meta]++;
+    }
+    name="";
+  }
+  END {
+    for (m in item) print "\n" m " (" count[m] "):" item[m];
+  }
+' "$TMP"
+echo
+echo "RESULT: ASVD_BT_TYPE_HELPER_COMPARE_TYPES_DONE"
+EOFG
+
+cat > "$MOD/helper-connected-devices.sh" <<'EOFG'
+#!/system/bin/sh
+set -eu
+SHOW_MAC="0"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --show-mac) SHOW_MAC="1" ;;
+    --help|-h)
+      echo "Usage: $0 [--show-mac]"
+      echo "Read-only best-effort view of currently connected Bluetooth devices."
+      echo "Default redacts Bluetooth MAC addresses. Use --show-mac only locally."
+      exit 0
+      ;;
+    *) echo "unknown_arg=$1"; exit 2 ;;
+  esac
+  shift
+done
 
 redact_stream() {
-  /system/bin/sed -E 's/([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}/<BT_MAC>/g'
+  if [ "$SHOW_MAC" = "1" ]; then
+    /system/bin/cat
+  else
+    /system/bin/sed -E 's/([0-9A-Fa-fXx]{2}:){5}[0-9A-Fa-fXx]{2}/<BT_MAC>/g'
+  fi
 }
 
-{
-  echo "== ASVD BT Type Helper GitHub/XDA debug =="
-  /system/bin/date
-  echo "redaction=on"
-  echo "safe_to_paste_publicly=yes"
-  echo
+BTCONF=""
+for f in /data/misc/bluedroid/bt_config.conf /data/misc/bluedroid/bt_config.bak; do
+  if [ -s "$f" ]; then BTCONF="$f"; break; fi
+done
 
-  echo "== module/package quick status =="
-  /system/bin/pm path "$PKG" 2>/dev/null || true
-  /system/bin/dumpsys package "$PKG" 2>/dev/null \
-    | /system/bin/grep -Ei "versionName|versionCode|PRIVILEGED|BLUETOOTH|granted|User 0" \
-    | /system/bin/sed -n "1,180p" || true
-  echo
+TMP="/data/local/tmp/asvd-bt-helper-connected-dumpsys.txt"
+MACS="/data/local/tmp/asvd-bt-helper-connected-macs.txt"
+rm -f "$TMP" "$MACS" 2>/dev/null || true
+/system/bin/dumpsys bluetooth_manager > "$TMP" 2>/dev/null || true
 
-  echo "== helper files =="
-  /system/bin/ls -l "$MOD"/helper-*.sh 2>/dev/null || true
-  echo
+resolve_name() {
+  mac="$1"
+  if [ -n "$BTCONF" ] && [ -s "$BTCONF" ]; then
+    /system/bin/awk -v want="[$mac]" '
+      $0 == want { found=1; next }
+      found && /^Name = / { print substr($0,8); exit }
+      found && /^\[/ { found=0 }
+    ' "$BTCONF" 2>/dev/null || true
+  fi
+}
 
-  echo "== report =="
-  /system/bin/sh "$MOD/helper-report.sh" "$@" 2>&1 || true
-  echo
+metadata_for_name() {
+  name="$1"
+  if [ -n "$name" ]; then
+    /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name "$name" 2>/dev/null \
+      | /system/bin/grep -m1 '^metadata_17_before=' \
+      | /system/bin/sed 's/^metadata_17_before=//' || true
+  fi
+}
 
-  echo "== recent ASVD logcat redacted =="
-  /system/bin/logcat -d -t 400 2>/dev/null \
-    | /system/bin/grep -Ei "ASVD-BT-HELPER|org.asvd|BtTypeReceiver|metadata_17|setMetadata|SecurityException|Permission Denial|RuntimeException|FATAL|RESULT: ASVD" \
-    | /system/bin/tail -220 \
-    | redact_stream || true
-  echo
-
-  echo "== paste guidance =="
-  echo "Paste this report into GitHub/XDA. Do not add --show-mac output unless explicitly requested privately."
-  echo
-  echo "RESULT: ASVD_BT_TYPE_HELPER_DEBUG_DONE"
-} | redact_stream > "$OUT"
-
-/system/bin/cat "$OUT"
+echo "== ASVD BT Type Helper currently connected devices =="
+echo "mode=currently_connected"
+echo "detection=best_effort"
+echo "mac_redaction=$([ "$SHOW_MAC" = "1" ] && echo off || echo on)"
+echo "write_performed=no"
+echo "bluetooth_reload_performed=no"
 echo
-echo "debug_file=$OUT"
-echo "RESULT: ASVD_BT_TYPE_HELPER_DEBUG_FILE_WRITTEN"
+
+if [ ! -s "$TMP" ]; then
+  echo "dumpsys_bluetooth_manager_unavailable=yes"
+  echo "RESULT: ASVD_BT_TYPE_HELPER_CONNECTED_DEVICES_BEST_EFFORT_DONE"
+  exit 0
+fi
+
+if /system/bin/grep -Eq 'mConnectionState: 2|mCurrentState: Connected|curState=Connected|state=Connected| processed=Connected ' "$TMP"; then
+  echo "connected_hint=yes"
+else
+  echo "connected_hint=unknown_or_none"
+fi
+
+/system/bin/grep -Eo '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}' "$TMP" 2>/dev/null \
+  | /system/bin/sort -u > "$MACS" || true
+
+idx=0
+if [ -s "$MACS" ]; then
+  echo
+  echo "== resolved current device candidates =="
+  while IFS= read -r mac; do
+    [ -n "$mac" ] || continue
+    idx=$((idx + 1))
+    name="$(resolve_name "$mac" | /system/bin/head -n 1)"
+    [ -n "$name" ] || name="unknown"
+    meta="$(metadata_for_name "$name" | /system/bin/head -n 1)"
+    [ -n "$meta" ] || meta="unknown"
+    if [ "$SHOW_MAC" = "1" ]; then outmac="$mac"; else outmac="<BT_MAC>"; fi
+    echo "[$idx] name=$name  mac=$outmac  connection_hint=connected_or_recent  metadata_17=$meta"
+  done < "$MACS"
+else
+  echo
+  echo "no_raw_current_device_mac_detected=yes"
+fi
+
+echo
+echo "== connected profile hints sanitized =="
+/system/bin/grep -Ei 'mCurrentDevice|mCurrentState|mConnectionState|curState=Connected|StateMachine: name=.*state=Connected| processed=Connected |A2dp|Headset|Hearing|LeAudio' "$TMP" \
+  | redact_stream \
+  | /system/bin/sed -n '1,180p' || true
+
+echo
+echo "RESULT: ASVD_BT_TYPE_HELPER_CONNECTED_DEVICES_BEST_EFFORT_DONE"
+EOFG
+
+cat > "$MOD/helper-last-devices.sh" <<'EOFG'
+#!/system/bin/sh
+set -eu
+SHOW_MAC="0"
+MODE="all"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --show-mac) SHOW_MAC="1" ;;
+    --connected|--last-connected) MODE="connected" ;;
+    --all|--last|--last-devices) MODE="all" ;;
+    --help|-h)
+      echo "Usage: $0 [--connected|--all] [--show-mac]"
+      echo "Default redacts Bluetooth MAC addresses. Use --show-mac only locally."
+      exit 0
+      ;;
+    *) echo "unknown_arg=$1"; exit 2 ;;
+  esac
+  shift
+done
+
+redact_stream() {
+  if [ "$SHOW_MAC" = "1" ]; then
+    /system/bin/cat
+  else
+    /system/bin/sed -E 's/[0-9A-Fa-fXx]{2}(:[0-9A-Fa-fXx]{2}){5}/<BT_MAC>/g'
+  fi
+}
+
+BTCONF=""
+for f in /data/misc/bluedroid/bt_config.conf /data/misc/bluedroid/bt_config.bak; do
+  if [ -s "$f" ]; then BTCONF="$f"; break; fi
+done
+
+echo "== ASVD BT Type Helper last device view =="
+echo "mode=$MODE"
+echo "mac_redaction=$([ "$SHOW_MAC" = "1" ] && echo off || echo on)"
+echo
+
+if [ "$MODE" = "connected" ]; then
+  echo "== last connected / active Bluetooth hints =="
+  TMP="/data/local/tmp/asvd-bt-helper-dumpsys-bluetooth.txt"
+  /system/bin/dumpsys bluetooth_manager > "$TMP" 2>/dev/null || true
+  if [ -s "$TMP" ]; then
+    /system/bin/grep -Ei 'active|connected|connection|mActive|mCurrent|mTarget|mDevice|A2dp|Headset|Hearing|LeAudio|profile' "$TMP" \
+      | /system/bin/grep -Evi 'Bluetooth Manager State|Adapter Properties|Profile: null' \
+      | redact_stream \
+      | /system/bin/sed -n '1,180p' || true
+  else
+    echo "dumpsys_bluetooth_manager_unavailable=yes"
+  fi
+  echo
+  echo "== bt_config last-known candidates =="
+else
+  echo "== bt_config paired / last-known devices =="
+fi
+
+if [ -n "$BTCONF" ]; then
+  echo "source=$BTCONF"
+  /system/bin/awk -v show="$SHOW_MAC" '
+    function clean(v) { gsub(/[\r\n\t]+/, " ", v); gsub(/^ +| +$/, "", v); return v }
+    function redmac(v) { return (show == "1" ? v : "<BT_MAC>") }
+    function flush() {
+      if (in_dev && name != "") {
+        idx++
+        if (last == "") last="unknown"
+        if (seen == "") seen="unknown"
+        if (dtype == "") dtype="unknown"
+        if (dclass == "") dclass="unknown"
+        printf("[%d] name=%s  mac=%s  last_connected=%s  last_seen=%s  dev_type=%s  dev_class=%s\n", idx, name, redmac(mac), last, seen, dtype, dclass)
+      }
+    }
+    /^\[[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]\]$/ {
+      flush(); in_dev=1; mac=substr($0,2,17); name=""; last=""; seen=""; dtype=""; dclass=""; next
+    }
+    /^\[/ { flush(); in_dev=0; next }
+    in_dev && /^Name = / { name=clean(substr($0,8)); next }
+    in_dev && /^DevType = / { dtype=clean(substr($0,11)); next }
+    in_dev && /^DevClass = / { dclass=clean(substr($0,12)); next }
+    in_dev && /^(LastConnected|LastConnection|LastConnectedTime|ConnectionTime|Timestamp|TimeStamp) = / { sub(/^[^=]+ = /, ""); last=clean($0); next }
+    in_dev && /^(LastSeen|LastSeenTime|SeenTime) = / { sub(/^[^=]+ = /, ""); seen=clean($0); next }
+    END { flush(); if (idx == 0) print "no_bt_config_devices_found_or_unreadable=yes" }
+  ' "$BTCONF"
+else
+  echo "bt_config_missing_or_unreadable=yes"
+fi
+
+echo
+if [ "$MODE" = "connected" ]; then
+  echo "RESULT: ASVD_BT_TYPE_HELPER_LAST_CONNECTED_DONE"
+else
+  echo "RESULT: ASVD_BT_TYPE_HELPER_LAST_DEVICES_DONE"
+fi
+EOFG
+
+cat > "$MOD/helper-pick-device.sh" <<'EOFG'
+#!/system/bin/sh
+set -eu
+. /data/adb/modules/asvd-bt-type-helper/helper-common.sh
+MOD="/data/adb/modules/asvd-bt-type-helper"
+PICK_FILE="$MOD/picked-device.env"
+BASE="/data/local/tmp/asvd-bt-helper-pick-devices"
+RAW="$BASE.raw.tsv"
+BTMAP="$BASE.btmap.tsv"
+ACTIVE="$BASE.active-suffixes.txt"
+CAND="$BASE.candidates.tsv"
+FILTER=""
+SELECT=""
+SHOW_MAC="0"
+CLEAR="0"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --filter) shift; FILTER="${1:-}" ;;
+    --select) shift; SELECT="${1:-}" ;;
+    --show-mac) SHOW_MAC="1" ;;
+    --clear) CLEAR="1" ;;
+    --help|-h)
+      echo "Usage: $0 [--filter TEXT] [--select NUMBER] [--show-mac] [--clear]"
+      echo "Duplicate-safe picker. Shows safe distinguishing hints and stores the selected internal MAC in a root-only file."
+      exit 0
+      ;;
+    *) echo "unknown_arg=$1"; exit 2 ;;
+  esac
+  shift
+done
+
+if [ "$CLEAR" = "1" ]; then
+  /system/bin/rm -f "$PICK_FILE"
+  echo "picked_device_cleared=yes"
+  echo "RESULT: ASVD_BT_TYPE_HELPER_PICK_DEVICE_CLEARED"
+  exit 0
+fi
+
+find_result() {
+  for f in "/data_mirror/data_ce/null/0/$PKG/files/last-result.txt" "/data/user/0/$PKG/files/last-result.txt" "/data_mirror/data_de/null/0/$PKG/files/last-result.txt"; do
+    if [ -s "$f" ]; then echo "$f"; return 0; fi
+  done
+  return 1
+}
+
+sanitize_token() {
+  echo "$1" | /system/bin/tr '[:upper:]' '[:lower:]' | /system/bin/sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//'
+}
+
+mac_suffix() {
+  echo "$1" | /system/bin/awk -F: '{ if (NF >= 2) print $(NF-1) ":" $NF }' | /system/bin/tr '[:upper:]' '[:lower:]'
+}
+
+# 1) Get paired devices from the app with internal MAC access. Output remains redacted unless --show-mac is requested.
+asvd_clear
+PICK_SHOW_MAC="$SHOW_MAC"
+NAME=""; MAC=""; SHOW_MAC="1"
+asvd_broadcast "$PKG.LIST" >/dev/null || true
+SHOW_MAC="$PICK_SHOW_MAC"
+/system/bin/sleep 2
+RESULT="$(find_result || true)"
+[ -n "$RESULT" ] || { echo "FAIL no_list_result"; echo "RESULT: ASVD_BT_TYPE_HELPER_PICK_DEVICE_FAIL"; exit 1; }
+
+/system/bin/awk '
+  /^-- device / { if (idx>0) print idx "\t" name "\t" addr "\t" meta; idx=$3; gsub("--", "", idx); name=""; addr=""; meta=""; next }
+  /^name=/ { name=substr($0,6); next }
+  /^address=/ { addr=substr($0,9); next }
+  /^metadata_17=/ { meta=substr($0,13); next }
+  END { if (idx>0) print idx "\t" name "\t" addr "\t" meta }
+' "$RESULT" > "$RAW"
+
+# 2) Build bt_config hint map: MAC, last_connected, dev_type, dev_class, name.
+BTCONF=""
+for p in /data/misc/bluedroid/bt_config.conf /data/misc/bluetooth/bt_config.conf; do
+  if [ -r "$p" ]; then BTCONF="$p"; break; fi
+done
+if [ -n "$BTCONF" ]; then
+  /system/bin/awk '
+    function clean(v) { gsub(/[\r\n\t]+/, " ", v); gsub(/^ +| +$/, "", v); return v }
+    function flush() {
+      if (in_dev && mac != "") {
+        if (last == "") last="unknown"
+        if (dtype == "") dtype="unknown"
+        if (dclass == "") dclass="unknown"
+        print mac "\t" last "\t" dtype "\t" dclass "\t" name
+      }
+    }
+    /^\[[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]:[0-9A-Fa-f][0-9A-Fa-f]\]$/ {
+      flush(); in_dev=1; mac=substr($0,2,17); name=""; last=""; dtype=""; dclass=""; next
+    }
+    /^\[/ { flush(); in_dev=0; next }
+    in_dev && /^Name = / { name=clean(substr($0,8)); next }
+    in_dev && /^DevType = / { dtype=clean(substr($0,11)); next }
+    in_dev && /^DevClass = / { dclass=clean(substr($0,12)); next }
+    in_dev && /^(LastConnected|LastConnection|LastConnectedTime|ConnectionTime|Timestamp|TimeStamp) = / { sub(/^[^=]+ = /, ""); last=clean($0); next }
+    END { flush() }
+  ' "$BTCONF" > "$BTMAP"
+else
+  : > "$BTMAP"
+fi
+
+# 3) Best-effort active A2DP/media suffix hints from bluetooth_manager; used only as a hint, never as sole authorization.
+DUMP="$BASE.bluetooth.dump"
+/system/bin/dumpsys bluetooth_manager > "$DUMP" 2>/dev/null || true
+/system/bin/grep -Ei 'active A2DP|mActiveDevice|BluetoothActiveDeviceManager|A2DP:|Active:' "$DUMP" 2>/dev/null \
+  | /system/bin/grep -Eo '([0-9A-Fa-fXx]{2}:){5}[0-9A-Fa-fXx]{2}' 2>/dev/null \
+  | /system/bin/awk -F: '{ if (NF >= 2) print tolower($(NF-1) ":" $NF) }' \
+  | /system/bin/sort -u > "$ACTIVE" || true
+
+# 4) Assemble candidate table with safe distinguishing hints.
+: > "$CAND"
+TAB="$(printf '\t')"
+while IFS="$TAB" read -r src_idx backend_name full_mac meta; do
+  [ -n "${src_idx:-}" ] || continue
+  lc_name="$(echo "$backend_name" | /system/bin/tr '[:upper:]' '[:lower:]')"
+  lc_filter="$(echo "$FILTER" | /system/bin/tr '[:upper:]' '[:lower:]')"
+  if [ -n "$lc_filter" ] && ! echo "$lc_name" | /system/bin/grep -Fq "$lc_filter"; then
+    continue
+  fi
+  [ -n "$meta" ] || meta="null"
+  last="unknown"; dtype="unknown"; dclass="unknown"; cfg_name=""
+  map_line="$(/system/bin/grep -F "${full_mac}${TAB}" "$BTMAP" 2>/dev/null | /system/bin/head -n 1 || true)"
+  if [ -n "$map_line" ]; then
+    last="$(echo "$map_line" | /system/bin/cut -f2)"
+    dtype="$(echo "$map_line" | /system/bin/cut -f3)"
+    dclass="$(echo "$map_line" | /system/bin/cut -f4)"
+    cfg_name="$(echo "$map_line" | /system/bin/cut -f5-)"
+  fi
+  suffix="$(mac_suffix "$full_mac")"
+  active="no"
+  if [ -n "$suffix" ] && /system/bin/grep -iqx "$suffix" "$ACTIVE" 2>/dev/null; then
+    active="yes"
+  fi
+  token="$(sanitize_token "$backend_name")"
+  [ -n "$token" ] || token="device"
+  candidate_id="${token}-${src_idx}"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$src_idx" "$backend_name" "$full_mac" "$meta" "$last" "$dtype" "$dclass" "$active" "$candidate_id" "$cfg_name" >> "$CAND"
+done < "$RAW"
+
+COUNT="$(/system/bin/wc -l < "$CAND" | /system/bin/tr -d ' ')"
+echo "== ASVD BT Type Helper duplicate-safe picker =="
+echo "filter=${FILTER:-}"
+echo "candidate_count=$COUNT"
+echo "mac_redaction=$([ "$SHOW_MAC" = "1" ] && echo off || echo on)"
+echo "display_hint=Android UI name may differ from backend_name. Use candidate_id, source_index, last_connected and likely_current_media to distinguish duplicates."
+echo
+
+if [ "$COUNT" -eq 0 ]; then
+  echo "FAIL no_candidates"
+  echo "RESULT: ASVD_BT_TYPE_HELPER_PICK_DEVICE_FAIL"
+  exit 1
+fi
+
+/system/bin/awk -F "\t" -v showmac="$SHOW_MAC" '
+  { count[$2]++; rows[NR]=$0 }
+  END {
+    print "== candidates =="
+    for (i=1; i<=NR; i++) {
+      split(rows[i], f, "\t")
+      dup=(count[f[2]]>1 ? "yes" : "no")
+      mac=(showmac=="1" ? f[3] : "<BT_MAC>")
+      meta=f[4]; if (meta=="") meta="null"
+      printf("[%d] candidate_id=%s  backend_name=%s  metadata_17=%s  duplicate_name=%s  source_index=%s  last_connected=%s  dev_type=%s  dev_class=%s  likely_current_media=%s  mac=%s\n", i, f[9], f[2], meta, dup, f[1], f[5], f[6], f[7], f[8], mac)
+    }
+  }
+' "$CAND"
+
+echo
+if [ -z "$SELECT" ]; then
+  echo "select_hint=Run again with --select NUMBER to store one candidate for helper-set-picked.sh"
+  echo "example=$0 --filter 'Tribit XSound Go' --select 1"
+  echo "safety_hint=If two candidates still look identical, do not select. Reconnect only the target device, rerun, and prefer likely_current_media=yes or newest last_connected."
+  echo "RESULT: ASVD_BT_TYPE_HELPER_PICK_DEVICE_LIST_DONE"
+  exit 0
+fi
+
+LINE="$(/system/bin/awk -F "\t" -v n="$SELECT" 'NR==n {print; exit}' "$CAND")"
+if [ -z "$LINE" ]; then
+  echo "FAIL invalid_selection=$SELECT"
+  echo "RESULT: ASVD_BT_TYPE_HELPER_PICK_DEVICE_FAIL"
+  exit 2
+fi
+
+SRC_INDEX="$(echo "$LINE" | /system/bin/cut -f1)"
+PICK_NAME="$(echo "$LINE" | /system/bin/cut -f2)"
+PICK_MAC="$(echo "$LINE" | /system/bin/cut -f3)"
+PICK_META="$(echo "$LINE" | /system/bin/cut -f4)"
+PICK_LAST="$(echo "$LINE" | /system/bin/cut -f5)"
+PICK_DTYPE="$(echo "$LINE" | /system/bin/cut -f6)"
+PICK_DCLASS="$(echo "$LINE" | /system/bin/cut -f7)"
+PICK_ACTIVE="$(echo "$LINE" | /system/bin/cut -f8)"
+PICK_ID="$(echo "$LINE" | /system/bin/cut -f9)"
+[ -n "$PICK_META" ] || PICK_META="null"
+
+umask 077
+{
+  echo "picked_source_index=$SRC_INDEX"
+  asvd_state_line picked_candidate_id "$PICK_ID"
+  asvd_state_line picked_name "$PICK_NAME"
+  asvd_state_line picked_mac "$PICK_MAC"
+  asvd_state_line picked_metadata_17 "$PICK_META"
+  asvd_state_line picked_last_connected "$PICK_LAST"
+  asvd_state_line picked_dev_type "$PICK_DTYPE"
+  asvd_state_line picked_dev_class "$PICK_DCLASS"
+  asvd_state_line picked_likely_current_media "$PICK_ACTIVE"
+  asvd_state_line picked_filter "$FILTER"
+  echo "picked_at=$(/system/bin/date +%Y-%m-%dT%H:%M:%S%z 2>/dev/null || echo unknown)"
+} > "$PICK_FILE"
+/system/bin/chmod 0600 "$PICK_FILE" 2>/dev/null || true
+
+echo "picked_device_saved=$PICK_FILE"
+echo "picked_candidate_id=$PICK_ID"
+echo "picked_source_index=$SRC_INDEX"
+echo "picked_name=$PICK_NAME"
+echo "picked_metadata_17=$PICK_META"
+echo "picked_last_connected=$PICK_LAST"
+echo "picked_dev_type=$PICK_DTYPE"
+echo "picked_dev_class=$PICK_DCLASS"
+echo "picked_likely_current_media=$PICK_ACTIVE"
+echo "mac_hidden=yes"
+echo "next_dry_run=tsu /system/bin/sh $MOD/helper-set-picked.sh --type speaker --dry-run"
+echo "RESULT: ASVD_BT_TYPE_HELPER_PICK_DEVICE_SAVED"
+EOFG
+
+cat > "$MOD/helper-set-picked.sh" <<'EOFG'
+#!/system/bin/sh
+set -eu
+. /data/adb/modules/asvd-bt-type-helper/helper-common.sh
+MOD="/data/adb/modules/asvd-bt-type-helper"
+PICK_FILE="$MOD/picked-device.env"
+TYPE=""
+DRY_RUN="0"
+CONFIRM="0"
+ALLOW_WATCH_SPEAKER="0"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --type) shift; TYPE="${1:-}" ;;
+    --dry-run) DRY_RUN="1" ;;
+    --confirm-set) CONFIRM="1" ;;
+    --allow-watch-speaker) ALLOW_WATCH_SPEAKER="1" ;;
+    --help|-h)
+      echo "Usage: $0 --type TYPE [--dry-run|--confirm-set] [--allow-watch-speaker]"
+      echo "Uses the root-only picked-device.env created by helper-pick-device.sh."
+      exit 0
+      ;;
+    *) echo "unknown_arg=$1"; exit 2 ;;
+  esac
+  shift
+done
+[ -s "$PICK_FILE" ] || { echo "FAIL picked_device_missing=$PICK_FILE"; echo "RESULT: ASVD_BT_TYPE_HELPER_SET_PICKED_FAIL"; exit 1; }
+# shellcheck disable=SC1090
+. "$PICK_FILE"
+[ -n "${picked_mac:-}" ] || { echo "FAIL picked_mac_missing"; echo "RESULT: ASVD_BT_TYPE_HELPER_SET_PICKED_FAIL"; exit 1; }
+[ -n "$TYPE" ] || { echo "FAIL missing_type"; echo "RESULT: ASVD_BT_TYPE_HELPER_SET_PICKED_FAIL"; exit 2; }
+
+echo "== ASVD BT Type Helper set picked device =="
+echo "picked_candidate_id=${picked_candidate_id:-unknown}"
+echo "picked_name=${picked_name:-unknown}"
+echo "picked_metadata_17=${picked_metadata_17:-unknown}"
+echo "picked_source_index=${picked_source_index:-unknown}"
+echo "picked_last_connected=${picked_last_connected:-unknown}"
+echo "picked_dev_type=${picked_dev_type:-unknown}"
+echo "picked_dev_class=${picked_dev_class:-unknown}"
+echo "picked_likely_current_media=${picked_likely_current_media:-unknown}"
+echo "mac_hidden=yes"
+echo "requested_type=$TYPE"
+echo
+
+EXTRA=""
+[ "$ALLOW_WATCH_SPEAKER" = "1" ] && EXTRA="--allow-watch-speaker"
+if [ "$DRY_RUN" = "1" ]; then
+  # shellcheck disable=SC2086
+  exec /system/bin/sh "$MOD/helper-set-type.sh" --mac "$picked_mac" --type "$TYPE" --dry-run $EXTRA
+fi
+if [ "$CONFIRM" = "1" ]; then
+  # shellcheck disable=SC2086
+  exec /system/bin/sh "$MOD/helper-set-type.sh" --mac "$picked_mac" --type "$TYPE" --confirm-set $EXTRA
+fi
+
+echo "Refusing to write without --dry-run or --confirm-set."
+echo "RESULT: ASVD_BT_TYPE_HELPER_SET_PICKED_CONFIRM_REQUIRED"
+exit 2
 EOFG
 
 cat > "$MOD/helper-setup.sh" <<'EOFG'
@@ -1289,34 +2466,23 @@ DRY_RUN="0"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --show-mac)
-      SETUP_SHOW_MAC="1"
-      ;;
-    --dry-run)
-      DRY_RUN="1"
-      ;;
+    --show-mac) SETUP_SHOW_MAC="1" ;;
+    --dry-run) DRY_RUN="1" ;;
     --help|-h)
       echo "Usage: $0 [--show-mac] [--dry-run]"
       echo "Default redacts MAC addresses in terminal output. Use --show-mac only locally."
       echo "Dry-run resolves targets and actions but does not write metadata or save config."
       exit 0
       ;;
-    *)
-      echo "unknown_arg=$1"
-      exit 2
-      ;;
+    *) echo "unknown_arg=$1"; exit 2 ;;
   esac
   shift
 done
 
-cancel_setup() {
-  echo "cancelled=yes"
-  echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_CANCELLED"
-  exit 0
-}
+cancel_setup() { echo "cancelled=yes"; echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_CANCELLED"; exit 0; }
 
 find_result() {
-  for f in     "/data_mirror/data_ce/null/0/$PKG/files/last-result.txt"     "/data/user/0/$PKG/files/last-result.txt"     "/data_mirror/data_de/null/0/$PKG/files/last-result.txt"; do
+  for f in "/data_mirror/data_ce/null/0/$PKG/files/last-result.txt" "/data/user/0/$PKG/files/last-result.txt" "/data_mirror/data_de/null/0/$PKG/files/last-result.txt"; do
     if [ -s "$f" ]; then echo "$f"; return 0; fi
   done
   return 1
@@ -1353,16 +2519,14 @@ print_devices() {
         split(rows[i], f, "	")
         mac = (showmac == "1") ? f[3] : "<BT_MAC>"
         dup = (count[f[2]] > 1) ? "  duplicate_name=yes" : ""
-        expflag = (f[4] == "Speaker" || f[4] == "Headphones") ? "  experimental_type=yes" : ""
+        expflag = (f[4] == "Speaker" || f[4] == "Headset" || f[4] == "Untethered Headset" || f[4] == "Watch" || f[4] == "Stylus" || f[4] == "HearingAid" || f[4] == "Default") ? "  experimental_type=yes" : ""
         printf("[%s] %s  mac=%s  metadata_17=%s%s%s\n", f[1], f[2], mac, f[4], dup, expflag)
       }
     }
   ' "$TMP"
 }
 
-run_get_for_mac() {
-  /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$1"     | /system/bin/grep -E "target_matches=|name=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER" || true
-}
+run_get_for_mac() { /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$1" | /system/bin/grep -E "target_matches=|name=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER" || true; }
 
 save_config() {
   [ "$DRY_RUN" = "1" ] && { echo "config_write=skipped_dry_run"; return 0; }
@@ -1377,14 +2541,10 @@ save_config() {
   echo "config=$CONF"
 }
 
-echo "== ASVD BT Type Helper setup v0.5.4 =="
+echo "== ASVD BT Type Helper setup v0.6.2 =="
 echo "This wizard lists paired devices, reads the selected target, then asks before writing."
-if [ "$DRY_RUN" = "1" ]; then echo "DRY_RUN=yes: no metadata write and no config write will be performed."; fi
-if [ "$SETUP_SHOW_MAC" = "1" ]; then
-  echo "MAC display: raw/local only. Do not paste public logs."
-else
-  echo "MAC display: redacted. Use --show-mac only locally if needed."
-fi
+[ "$DRY_RUN" = "1" ] && echo "DRY_RUN=yes: no metadata write and no config write will be performed."
+if [ "$SETUP_SHOW_MAC" = "1" ]; then echo "MAC display: raw/local only. Do not paste public logs."; else echo "MAC display: redacted. Use --show-mac only locally if needed."; fi
 echo
 
 /system/bin/pm path "$PKG" >/dev/null || { echo "FAIL package_not_visible"; echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_FAIL"; exit 1; }
@@ -1392,22 +2552,29 @@ echo
 echo "== list devices =="
 asvd_clear
 NAME=""; MAC=""; SHOW_MAC="1"
+REQUEST_ID="$(asvd_make_request_id)"
+echo "request_id=$REQUEST_ID"
 asvd_broadcast "$PKG.LIST" >/dev/null || true
-/system/bin/sleep 2
-RESULT="$(find_result || true)"
-if [ -z "$RESULT" ]; then echo "FAIL no_list_result"; echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_FAIL"; exit 1; fi
+RESULT="$(asvd_wait_result_file "$PKG.LIST" "$REQUEST_ID" 20 || true)"
+if [ -z "$RESULT" ]; then
+  asvd_explain_list_wait_failure
+  echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_FAIL"
+  exit 1
+fi
+if ! asvd_validate_list_result_file "$RESULT" "$REQUEST_ID"; then
+  echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_FAIL"
+  exit 1
+fi
 parse_devices "$RESULT"
-if [ ! -s "$TMP" ]; then echo "FAIL no_devices_parsed"; echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_FAIL"; exit 1; fi
+[ -s "$TMP" ] || { echo "FAIL no_devices_parsed action=LIST expected=LIST device_blocks=0"; echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_FAIL"; exit 1; }
 
 print_devices
 echo
 printf "Select device number, or q to quit: "
 if ! read -r SEL; then cancel_setup; fi
-case "$SEL" in
-  q|Q|quit|Quit|exit|Exit|"") cancel_setup ;;
-esac
+case "$SEL" in q|Q|quit|Quit|exit|Exit|"") cancel_setup ;; esac
 LINE="$(/system/bin/awk -F "	" -v n="$SEL" '$1==n {print; exit}' "$TMP")"
-if [ -z "$LINE" ]; then echo "FAIL invalid_selection=$SEL"; echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_FAIL"; exit 2; fi
+[ -n "$LINE" ] || { echo "FAIL invalid_selection=$SEL"; echo "RESULT: ASVD_BT_TYPE_HELPER_SETUP_FAIL"; exit 2; }
 NAME="$(echo "$LINE" | /system/bin/cut -f2)"
 MAC="$(echo "$LINE" | /system/bin/cut -f3)"
 META="$(echo "$LINE" | /system/bin/cut -f4)"
@@ -1418,9 +2585,7 @@ echo "Selected device:"
 echo "Name: $NAME"
 if [ "$SETUP_SHOW_MAC" = "1" ]; then echo "MAC: $MAC"; else echo "MAC: <selected>"; fi
 echo "Current type: $META"
-if [ "$DUP_COUNT" -gt 1 ]; then
-  echo "Duplicate name: yes; number selection keeps the selected internal MAC."
-fi
+[ "$DUP_COUNT" -gt 1 ] && echo "Duplicate name: yes; number selection keeps the selected internal MAC."
 case "$META" in
   Carkit) echo "Recommended action: read only or keep car/Carkit" ;;
   null|"") echo "Recommended action: read only first; set only if you know the intended type" ;;
@@ -1434,46 +2599,51 @@ run_get_for_mac "$MAC"
 echo
 echo "Available actions:"
 echo "[1] read only / no change"
-echo "[2] set car / Carkit"
+echo "[2] set car / Carkit (verified reference)"
 echo "[3] set speaker / Speaker (experimental)"
-echo "[4] set headphones / Headphones (experimental)"
-echo "[5] clear metadata key 17"
+echo "[4] set headset / Headset (experimental; headphones alias)"
+echo "[5] set untethered headset / TWS / earbuds (experimental)"
+echo "[6] set watch / Watch (experimental)"
+echo "[7] set stylus / Stylus (experimental)"
+echo "[8] set hearing aid / HearingAid (experimental)"
+echo "[9] set default / Default (experimental)"
+echo "[10] clear metadata key 17"
 echo "[q] quit"
 printf "Select action: "
 if ! read -r ACTION; then cancel_setup; fi
 case "$ACTION" in
   q|Q|quit|Quit|exit|Exit|"") cancel_setup ;;
-  1)
-    TARGET_TYPE="read-only"
-    /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC"
-    ;;
-  2|3|4)
+  1) TARGET_TYPE="read-only"; /data/adb/modules/asvd-bt-type-helper/helper-get.sh --mac "$MAC" ;;
+  2|3|4|5|6|7|8|9)
     case "$ACTION" in
       2) TARGET_TYPE="car"; PRETTY="Carkit" ;;
       3) TARGET_TYPE="speaker"; PRETTY="Speaker (experimental)" ;;
-      4) TARGET_TYPE="headphones"; PRETTY="Headphones (experimental)" ;;
+      4) TARGET_TYPE="headset"; PRETTY="Headset (experimental)" ;;
+      5) TARGET_TYPE="untethered-headset"; PRETTY="Untethered Headset (experimental)" ;;
+      6) TARGET_TYPE="watch"; PRETTY="Watch (experimental)" ;;
+      7) TARGET_TYPE="stylus"; PRETTY="Stylus (experimental)" ;;
+      8) TARGET_TYPE="hearingaid"; PRETTY="HearingAid (experimental)" ;;
+      9) TARGET_TYPE="default"; PRETTY="Default (experimental)" ;;
     esac
     echo
     echo "About to set: $NAME -> $PRETTY"
     if [ "$DRY_RUN" = "1" ]; then
       /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --mac "$MAC" --type "$TARGET_TYPE" --dry-run
     else
-      printf "Type YES to continue: "
-      if ! read -r YES; then cancel_setup; fi
-      if [ "$YES" != "YES" ]; then cancel_setup; fi
+      printf "Type YES to continue: "; if ! read -r YES; then cancel_setup; fi
+      [ "$YES" = "YES" ] || cancel_setup
       /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --mac "$MAC" --type "$TARGET_TYPE" --confirm-set
     fi
     ;;
-  5)
+  10)
     TARGET_TYPE="clear"
     echo
     echo "About to clear metadata key 17 for: $NAME"
     if [ "$DRY_RUN" = "1" ]; then
       /data/adb/modules/asvd-bt-type-helper/helper-clear-type.sh --mac "$MAC" --dry-run
     else
-      printf "Type YES to continue: "
-      if ! read -r YES; then cancel_setup; fi
-      if [ "$YES" != "YES" ]; then cancel_setup; fi
+      printf "Type YES to continue: "; if ! read -r YES; then cancel_setup; fi
+      [ "$YES" = "YES" ] || cancel_setup
       /data/adb/modules/asvd-bt-type-helper/helper-clear-type.sh --mac "$MAC" --confirm-clear
     fi
     ;;
@@ -1534,7 +2704,7 @@ echo "dry_run=$DRY_RUN"
 echo
 
 case "$TARGET_TYPE" in
-  car|carkit|auto|speaker|headphones)
+  car|carkit|auto|speaker|headphones|headset|untethered-headset|earbuds|tws|watch|stylus|pen|hearingaid|hearing-aid|default)
     if [ "$DRY_RUN" = "1" ]; then
       run_for_target /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --type "$TARGET_TYPE" --dry-run
     else
@@ -1559,73 +2729,220 @@ echo "RESULT: ASVD_BT_TYPE_HELPER_APPLY_CONFIG_DONE"
 EOFG
 
 
-cat > "$MOD/helper-doctor.sh" <<'EOFG'
+cat > "$MOD/helper-env-verify.sh" <<'EOFG'
 #!/system/bin/sh
 set -eu
-PKG="org.asvd.bttypehelper"
 MOD="/data/adb/modules/asvd-bt-type-helper"
-PROP="$MOD/module.prop"
-
+STATE="/data/adb/asvd/bt-helper.env"
+FAIL=0
+fail() { echo "FAIL $1"; FAIL=1; }
 pass() { echo "PASS $1"; }
 warn() { echo "WARN $1"; }
-fail() { echo "FAIL $1"; FAILS=$((FAILS + 1)); }
-FAILS=0
 
-echo "== ASVD BT Type Helper doctor =="
-/system/bin/date
+raw_mac_present() {
+  /system/bin/grep -Eq '([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}' "$1" 2>/dev/null
+}
 
+get_kv() {
+  key="$1"
+  /system/bin/sed -n "s/^${key}=//p" "$STATE" 2>/dev/null | /system/bin/head -n 1
+}
+
+echo "== ASVD BT Helper env verify =="
+echo "read_only=yes"
+echo "contract_version=bt-helper-env-v1"
+echo "contract_changed=no"
+echo "recommended_asvd=1.2.9_or_newer"
+echo "minimum_known_compatible_asvd_line=1.2.7+"
+echo "android_release=$(/system/bin/getprop ro.build.version.release 2>/dev/null || echo unknown)"
+echo "android_sdk=$(/system/bin/getprop ro.build.version.sdk 2>/dev/null || echo unknown)"
 echo
-echo "== module =="
-[ -d "$MOD" ] && pass "module_path=$MOD" || fail "module_path_missing=$MOD"
-[ -s "$PROP" ] && pass "module_prop_present" || fail "module_prop_missing"
-if [ -s "$PROP" ]; then
-  /system/bin/grep -E "^version=|^versionCode=|^updateJson=" "$PROP" || true
-  /system/bin/grep -q "^versionCode=54$" "$PROP" && pass "versionCode=54" || warn "versionCode_not_54_or_unreadable"
-  /system/bin/grep -q "^updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json$" "$PROP" && pass "updateJson_present" || fail "updateJson_missing"
+
+if [ -s "$MOD/module.prop" ]; then
+  echo "module_version=$(/system/bin/sed -n 's/^version=//p' "$MOD/module.prop" | /system/bin/head -n 1)"
+  echo "module_versionCode=$(/system/bin/sed -n 's/^versionCode=//p' "$MOD/module.prop" | /system/bin/head -n 1)"
+  pass "module_prop_present"
+else
+  fail "module_prop_missing"
+fi
+
+if [ ! -s "$STATE" ]; then
+  fail "state_file_missing=$STATE"
+else
+  echo "state_file=$STATE"
+  if raw_mac_present "$STATE"; then fail "raw_bt_mac_present_in_state"; else pass "no_raw_bt_mac_in_state"; fi
+  helper_present="$(get_kv helper_present)"
+  helper_package="$(get_kv helper_package)"
+  helper_version="$(get_kv helper_version)"
+  helper_versionCode="$(get_kv helper_versionCode)"
+  last_result="$(get_kv last_result)"
+  current_type="$(get_kv current_type)"
+  method="$(get_kv method)"
+  apply_now="$(get_kv asvd_apply_now_triggered)"
+
+  [ "$helper_present" = "1" ] && pass "helper_present=1" || fail "helper_present_not_1=${helper_present:-missing}"
+  [ "$helper_package" = "org.asvd.bttypehelper" ] && pass "helper_package" || fail "helper_package_unexpected=${helper_package:-missing}"
+  [ -n "$helper_version" ] && pass "helper_version=$helper_version" || fail "helper_version_missing"
+  case "$helper_versionCode" in ''|*[!0-9]*) fail "helper_versionCode_invalid=${helper_versionCode:-missing}" ;; *) pass "helper_versionCode=$helper_versionCode" ;; esac
+  [ -n "$last_result" ] && pass "last_result=$last_result" || fail "last_result_missing"
+  [ -n "$current_type" ] && pass "current_type=$current_type" || fail "current_type_missing"
+  [ -n "$method" ] && pass "method=$method" || fail "method_missing"
+  case "$apply_now" in 0|1) pass "asvd_apply_now_triggered=$apply_now" ;; *) fail "asvd_apply_now_triggered_invalid=${apply_now:-missing}" ;; esac
 fi
 
 echo
+if [ "$FAIL" -eq 0 ]; then
+  echo "RESULT: ASVD_BT_TYPE_HELPER_ENV_VERIFY_PASS"
+else
+  echo "RESULT: ASVD_BT_TYPE_HELPER_ENV_VERIFY_FAIL"
+  exit 1
+fi
+EOFG
+
+cat > "$MOD/helper-doctor.sh" <<'EOFG'
+#!/system/bin/sh
+set -eu
+MOD="/data/adb/modules/asvd-bt-type-helper"
+UPD="/data/adb/modules_update/asvd-bt-type-helper"
+PKG="org.asvd.bttypehelper"
+TMP="/data/local/tmp/asvd-bt-helper-doctor-v062"
+FAIL=0
+mkdir -p "$TMP" 2>/dev/null || true
+fail() { echo "FAIL $1"; FAIL=1; }
+pass() { echo "PASS $1"; }
+warn() { echo "WARN $1"; }
+
+check_script() {
+  f="$1"
+  p="$MOD/$f"
+  if [ ! -s "$p" ]; then fail "script_missing=$f"; return 0; fi
+  first="$(/system/bin/head -n 1 "$p" 2>/dev/null || true)"
+  case "$first" in '#!'*) pass "script_shebang=$f" ;; *) fail "script_shebang_missing=$f" ;; esac
+  if /system/bin/grep -q "$(/system/bin/printf '
+')" "$p" 2>/dev/null; then fail "script_crlf=$f"; else pass "script_lf=$f"; fi
+  /system/bin/sh -n "$p" >/dev/null 2>&1 && pass "script_syntax=$f" || fail "script_syntax=$f"
+}
+
+owner_line() { /system/bin/ls -ldn "$1" 2>/dev/null || true; }
+owner_root_root() {
+  line="$(owner_line "$1")"
+  set -- $line
+  [ "${3:-}" = "0" ] && [ "${4:-}" = "0" ]
+}
+
+pkg_target_sdk() {
+  /system/bin/dumpsys package "$PKG" 2>/dev/null     | /system/bin/grep -Eo 'targetSdk=[0-9]+'     | /system/bin/head -n 1     | /system/bin/sed 's/targetSdk=//' || true
+}
+
+perm_state() {
+  /system/bin/dumpsys package "$PKG" 2>/dev/null     | /system/bin/grep -A25 'runtime permissions:'     | /system/bin/grep 'android.permission.BLUETOOTH_CONNECT:'     | /system/bin/head -n 1 || true
+}
+
+echo "== ASVD BT Type Helper Doctor v0.6.2 =="
+echo "read_only=yes"
+echo "android_release=$(/system/bin/getprop ro.build.version.release 2>/dev/null || echo unknown)"
+echo "android_sdk=$(/system/bin/getprop ro.build.version.sdk 2>/dev/null || echo unknown)"
+echo "build_id=$(/system/bin/getprop ro.build.id 2>/dev/null || echo unknown)"
+echo "recommended_asvd=1.2.9_or_newer"
+echo "minimum_known_compatible_asvd_line=1.2.7+"
+echo "contract_version=bt-helper-env-v1"
+echo "contract_changed=no"
+echo "a17_bluetooth_permission_strategy=target_sdk_30_legacy_bluetooth_compat"
+echo
+
+echo "== module path =="
+[ -d "$MOD" ] && pass "active_module_present=$MOD" || fail "active_module_missing=$MOD"
+owner_root_root "$MOD" && pass "active_owner_root_root" || warn "active_owner_not_root_root $(owner_line "$MOD")"
+if [ -d "$UPD" ]; then
+  echo "modules_update_present=yes"
+  owner_root_root "$UPD" && pass "modules_update_owner_root_root" || warn "modules_update_owner_not_root_root $(owner_line "$UPD")"
+else
+  echo "modules_update_present=no"
+fi
+
+echo
+if [ -s "$MOD/module.prop" ]; then
+  /system/bin/sed -n '1,20p' "$MOD/module.prop"
+  active_v="$(/system/bin/sed -n 's/^version=//p' "$MOD/module.prop" | /system/bin/head -n 1)"
+  active_c="$(/system/bin/sed -n 's/^versionCode=//p' "$MOD/module.prop" | /system/bin/head -n 1)"
+  [ -n "$active_v" ] && pass "module_version=$active_v" || fail "module_version_missing"
+  [ -n "$active_c" ] && pass "module_versionCode=$active_c" || fail "module_versionCode_missing"
+else
+  fail "module_prop_missing"
+fi
+
+echo
+
 echo "== package =="
-PKG_PATH="$(/system/bin/pm path "$PKG" 2>/dev/null | /system/bin/head -n 1 || true)"
-echo "package_path=$PKG_PATH"
-case "$PKG_PATH" in
-  package:/system/priv-app/*) pass "priv_app_path" ;;
-  package:/data/app/*) fail "data_app_shadow" ;;
-  "") fail "package_not_visible" ;;
-  *) warn "unexpected_package_path" ;;
-esac
+/system/bin/pm path "$PKG" || fail "package_not_visible"
+/system/bin/dumpsys package "$PKG" 2>/dev/null | /system/bin/grep -E 'versionCode=|versionName=|targetSdk=' | /system/bin/head -n 12 || true
+target_sdk="$(pkg_target_sdk)"
+echo "target_sdk=${target_sdk:-unknown}"
+state="$(perm_state)"
+echo "bluetooth_connect_permission_state=${state:-not_listed}"
+if echo "$state" | /system/bin/grep -q 'granted=true'; then
+  pass "permission_bluetooth_connect_granted"
+elif [ -n "$target_sdk" ] && [ "$target_sdk" -le 30 ]; then
+  pass "target_sdk_legacy_bluetooth_compat=$target_sdk"
+  warn "permission_bluetooth_connect_not_granted_but_not_required_for_target_sdk_$target_sdk"
+else
+  fail "permission_bluetooth_connect_not_granted_target_sdk_${target_sdk:-unknown}"
+fi
 
 echo
-echo "== permissions =="
-/system/bin/pm grant "$PKG" android.permission.BLUETOOTH_CONNECT >/dev/null 2>&1 || true
-PERMS="$(/system/bin/dumpsys package "$PKG" 2>/dev/null | /system/bin/grep -Ei "BLUETOOTH_CONNECT|BLUETOOTH_PRIVILEGED|granted=true" | /system/bin/sed -n "1,120p" || true)"
-echo "$PERMS"
-echo "$PERMS" | /system/bin/grep -q "BLUETOOTH_PRIVILEGED: granted=true" && pass "bluetooth_privileged_granted" || warn "bluetooth_privileged_not_seen"
-echo "$PERMS" | /system/bin/grep -q "BLUETOOTH_CONNECT: granted=true" && pass "bluetooth_connect_granted" || warn "bluetooth_connect_not_seen"
 
-echo
-echo "== helper files =="
-for f in helper-common.sh helper-grant.sh helper-list.sh helper-get.sh helper-set-type.sh helper-clear-type.sh helper-report.sh helper-debug.sh helper-setup.sh helper-apply-config.sh helper-doctor.sh helper-update-info.sh asvd.sh; do
-  if [ -s "$MOD/$f" ]; then
-    /system/bin/sh -n "$MOD/$f" && pass "syntax_$f"
-  else
-    fail "missing_$f"
-  fi
+echo "== script integrity =="
+for f in helper-common.sh helper-list.sh helper-get.sh helper-doctor.sh helper-env-verify.sh helper-report.sh helper-debug.sh action.sh asvd.sh; do
+  check_script "$f"
 done
 
-echo
-echo "== bluetooth target read smoke =="
-/system/bin/sh "$MOD/helper-get.sh" --name H222 2>/dev/null   | /system/bin/grep -E "target_matches=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER_GET_DONE|RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_DONE" || warn "h222_get_no_output"
+if /system/bin/grep -q 'am_broadcast_detached_rc=' "$MOD/helper-common.sh" 2>/dev/null; then pass "marker_detached_broadcast"; else fail "marker_detached_broadcast_missing"; fi
+if /system/bin/grep -q 'asvd_validate_get_result_file' "$MOD/helper-common.sh" 2>/dev/null; then pass "marker_get_result_validator"; else fail "marker_get_result_validator_missing"; fi
+if /system/bin/grep -q 'RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_FAIL' "$MOD/helper-get.sh" 2>/dev/null; then pass "marker_get_wrapper_fail"; else fail "marker_get_wrapper_fail_missing"; fi
+if /system/bin/grep -q 'RESULT: ASVD_BT_TYPE_HELPER_ENV_VERIFY_PASS' "$MOD/helper-env-verify.sh" 2>/dev/null; then pass "marker_env_verify"; else fail "marker_env_verify_missing"; fi
 
 echo
-echo "== summary =="
-echo "failures=$FAILS"
-if [ "$FAILS" -eq 0 ]; then
+
+echo "== shared-state contract =="
+if /system/bin/sh "$MOD/helper-env-verify.sh" > "$TMP/env.txt" 2>&1; then
+  /system/bin/cat "$TMP/env.txt"
+  pass "env_verify"
+else
+  /system/bin/cat "$TMP/env.txt" || true
+  fail "env_verify"
+fi
+
+echo
+
+echo "== LIST smoke =="
+if /system/bin/sh "$MOD/helper-list.sh" > "$TMP/list.txt" 2>&1; then
+  /system/bin/grep -E 'PASS list_result_valid|RESULT: ASVD_BT_TYPE_HELPER_LIST_WRAPPER_DONE|FAIL ' "$TMP/list.txt" || true
+  /system/bin/grep -q 'PASS list_result_valid action=LIST' "$TMP/list.txt" && pass "list_smoke" || fail "list_smoke_marker_missing"
+else
+  /system/bin/grep -E 'BLUETOOTH_CONNECT|RESULT:|FAIL ' "$TMP/list.txt" || /system/bin/cat "$TMP/list.txt" || true
+  fail "list_smoke_command"
+fi
+
+echo
+
+echo "== GET H222 smoke =="
+if /system/bin/sh "$MOD/helper-get.sh" --name H222 > "$TMP/get.txt" 2>&1; then
+  /system/bin/grep -E 'PASS get_result_valid|target_matches=|metadata_17_before=|RESULT: ASVD_BT_TYPE_HELPER_GET_WRAPPER_DONE|FAIL ' "$TMP/get.txt" || true
+  /system/bin/grep -q 'PASS get_result_valid action=GET' "$TMP/get.txt" && pass "get_smoke" || fail "get_smoke_marker_missing"
+  /system/bin/grep -q '^metadata_17_before=Carkit' "$TMP/get.txt" && pass "h222_carkit" || warn "h222_not_carkit_or_unknown"
+else
+  /system/bin/grep -E 'BLUETOOTH_CONNECT|RESULT:|FAIL ' "$TMP/get.txt" || /system/bin/cat "$TMP/get.txt" || true
+  fail "get_smoke_command"
+fi
+
+echo
+if [ "$FAIL" -eq 0 ]; then
   echo "RESULT: ASVD_BT_TYPE_HELPER_DOCTOR_PASS"
 else
   echo "RESULT: ASVD_BT_TYPE_HELPER_DOCTOR_FAIL"
   exit 1
 fi
+
 EOFG
 
 cat > "$MOD/helper-update-info.sh" <<'EOFG'
@@ -1648,23 +2965,53 @@ echo "note=Magisk uses versionCode for update comparison."
 echo "RESULT: ASVD_BT_TYPE_HELPER_UPDATE_INFO_DONE"
 EOFG
 
+cat > "$MOD/action.sh" <<'EOFG'
+#!/system/bin/sh
+set -eu
+MOD="/data/adb/modules/asvd-bt-type-helper"
+OUT="/storage/emulated/0/Download/ASVD-BT-Type-Helper-action-latest.txt"
+TMP="$OUT.tmp.$$"
+{
+  echo "== ASVD BT Type Helper Magisk Action Report =="
+  echo "created_at=$(/system/bin/date +%Y-%m-%dT%H:%M:%S%z 2>/dev/null || echo unknown)"
+  echo
+  /system/bin/sh "$MOD/helper-report.sh" --name H222
+} > "$TMP" 2>&1
+/system/bin/mv -f "$TMP" "$OUT"
+/system/bin/chmod 0644 "$OUT" 2>/dev/null || true
+/system/bin/sed -n '1,260p' "$OUT"
+echo "action_report=$OUT"
+echo "RESULT: ASVD_BT_TYPE_HELPER_ACTION_DONE"
+
+EOFG
+
 cat > "$MOD/asvd.sh" <<'EOFG'
 #!/system/bin/sh
 set -eu
 MOD="/data/adb/modules/asvd-bt-type-helper"
 
 while true; do
-  echo "== ASVD BT Type Helper v0.5.4 =="
+  echo "== ASVD BT Type Helper v0.6.2 =="
   echo "[1] Setup wizard"
   echo "[2] Setup wizard dry-run"
-  echo "[3] List devices"
-  echo "[4] Read device by name"
-  echo "[5] Set type dry-run"
-  echo "[6] Set type confirmed"
-  echo "[7] Clear type dry-run"
-  echo "[8] Debug report"
-  echo "[9] Doctor"
-  echo "[10] Update info"
+  echo "[3] List paired devices"
+  echo "[4] Currently connected devices"
+  echo "[5] Pick duplicate-safe device"
+  echo "[6] Set picked device dry-run"
+  echo "[7] Set picked device confirmed"
+  echo "[8] Last connected BT hints"
+  echo "[9] Last devices summary"
+  echo "[10] Compare current metadata types"
+  echo "[11] Read device by name"
+  echo "[12] Set type dry-run by name"
+  echo "[13] Set type confirmed by name"
+  echo "[14] Clear type dry-run by name"
+  echo "[15] Restore last backup dry-run"
+  echo "[16] Restore last backup confirmed"
+  echo "[17] Action report"
+  echo "[18] Debug report"
+  echo "[19] Doctor"
+  echo "[20] Update info"
   echo "[q] Quit"
   printf "Select: "
   if ! read -r choice; then exit 0; fi
@@ -1672,33 +3019,63 @@ while true; do
     1) /system/bin/sh "$MOD/helper-setup.sh" ;;
     2) /system/bin/sh "$MOD/helper-setup.sh" --dry-run ;;
     3) /system/bin/sh "$MOD/helper-list.sh" ;;
-    4)
+    4) /system/bin/sh "$MOD/helper-connected-devices.sh" ;;
+    5)
+      printf "Filter text [empty=all, e.g. Tribit XSound Go]: "; read -r filter || filter=""
+      /system/bin/sh "$MOD/helper-pick-device.sh" --filter "$filter"
+      printf "Select candidate number to save, or Enter to skip: "; read -r pick || pick=""
+      if [ -n "$pick" ]; then /system/bin/sh "$MOD/helper-pick-device.sh" --filter "$filter" --select "$pick"; fi
+      ;;
+    6)
+      printf "Type [speaker|car|headset|untethered-headset|watch|stylus|hearingaid|default|clear]: "; read -r typ || typ=""; [ -n "$typ" ] || typ="speaker"
+      /system/bin/sh "$MOD/helper-set-picked.sh" --type "$typ" --dry-run
+      ;;
+    7)
+      printf "Type [speaker|car|headset|untethered-headset|watch|stylus|hearingaid|default|clear]: "; read -r typ || typ=""; [ -n "$typ" ] || typ="speaker"
+      echo "About to write metadata for picked device -> $typ"
+      printf "Type YES to continue: "; read -r yes || yes=""
+      [ "$yes" = "YES" ] || { echo "cancelled=yes"; continue; }
+      /system/bin/sh "$MOD/helper-set-picked.sh" --type "$typ" --confirm-set
+      ;;
+    8) /system/bin/sh "$MOD/helper-last-devices.sh" --connected ;;
+    9) /system/bin/sh "$MOD/helper-last-devices.sh" --all ;;
+    10) /system/bin/sh "$MOD/helper-compare-types.sh" ;;
+    11)
       printf "Device name [H222]: "; read -r name || name=""; [ -n "$name" ] || name="H222"
       /system/bin/sh "$MOD/helper-get.sh" --name "$name"
       ;;
-    5)
+    12)
       printf "Device name [H222]: "; read -r name || name=""; [ -n "$name" ] || name="H222"
-      printf "Type [car|speaker|headphones|clear]: "; read -r typ || typ=""; [ -n "$typ" ] || typ="car"
+      printf "Type [car|speaker|headset|untethered-headset|watch|stylus|hearingaid|default|clear]: "; read -r typ || typ=""; [ -n "$typ" ] || typ="car"
       /system/bin/sh "$MOD/helper-set-type.sh" --name "$name" --type "$typ" --dry-run
       ;;
-    6)
+    13)
       printf "Device name [H222]: "; read -r name || name=""; [ -n "$name" ] || name="H222"
-      printf "Type [car|speaker|headphones|clear]: "; read -r typ || typ=""; [ -n "$typ" ] || typ="car"
+      printf "Type [car|speaker|headset|untethered-headset|watch|stylus|hearingaid|default|clear]: "; read -r typ || typ=""; [ -n "$typ" ] || typ="car"
       echo "About to write metadata for $name -> $typ"
+      echo "Duplicate backend names are unsafe by name. Prefer [5] pick duplicate-safe device."
       printf "Type YES to continue: "; read -r yes || yes=""
       [ "$yes" = "YES" ] || { echo "cancelled=yes"; continue; }
       /system/bin/sh "$MOD/helper-set-type.sh" --name "$name" --type "$typ" --confirm-set
       ;;
-    7)
+    14)
       printf "Device name [H222]: "; read -r name || name=""; [ -n "$name" ] || name="H222"
       /system/bin/sh "$MOD/helper-clear-type.sh" --name "$name" --dry-run
       ;;
-    8)
+    15) /system/bin/sh "$MOD/helper-restore-last.sh" --dry-run ;;
+    16)
+      echo "About to restore the last metadata_17 backup."
+      printf "Type YES to continue: "; read -r yes || yes=""
+      [ "$yes" = "YES" ] || { echo "cancelled=yes"; continue; }
+      /system/bin/sh "$MOD/helper-restore-last.sh" --confirm-restore
+      ;;
+    17) /system/bin/sh "$MOD/action.sh" ;;
+    18)
       printf "Device name [H222]: "; read -r name || name=""; [ -n "$name" ] || name="H222"
       /system/bin/sh "$MOD/helper-debug.sh" --name "$name"
       ;;
-    9) /system/bin/sh "$MOD/helper-doctor.sh" ;;
-    10) /system/bin/sh "$MOD/helper-update-info.sh" ;;
+    19) /system/bin/sh "$MOD/helper-doctor.sh" ;;
+    20) /system/bin/sh "$MOD/helper-update-info.sh" ;;
     q|Q|quit|exit) exit 0 ;;
     *) echo "unknown_selection=$choice" ;;
   esac
@@ -1709,32 +3086,35 @@ while true; do
 done
 EOFG
 
-chmod 0755 "$MOD"/helper-*.sh "$MOD/asvd.sh" "$MOD/customize.sh"
+chmod 0755 "$MOD"/helper-*.sh "$MOD/asvd.sh" "$MOD/action.sh" "$MOD/customize.sh"
 
 cat > "$MOD/README.md" <<'EOFREADME'
-# ASVD BT Type Helper v0.5.4
+# ASVD BT Type Helper v0.6.2
 
-User-friendly privileged Bluetooth metadata helper.
+User-friendly privileged Bluetooth metadata helper with Android 17 / ASVD v1.2.9 companion polish.
 
 Scope:
 - Root/Magisk required
 - Priv-app helper APK
 - One-command main menu: `asvd.sh`
-- True dry-run support for setup, set, clear, and config apply
-- Doctor helper for fast support diagnosis
+- True dry-run support for setup, set, clear, config apply, and restore preview
+- All known Android Bluetooth metadata device type values: `Default`, `Watch`, `Untethered Headset`, `Stylus`, `Speaker`, `Headset`, `Carkit`, `HearingAid`
+- Aliases: `car`, `speaker`, `headphones`, `headset`, `earbuds`, `tws`, `watch`, `stylus`, `hearingaid`, `default`, `clear`
+- Backup before confirmed metadata writes/clears
+- Restore-last helper
+- Compare-types helper
+- Currently connected, last connected, and last devices views
+- Duplicate-safe device picker for identical backend names
+- Picked-device workflow for safe dry-run/confirm by internal MAC without printing MAC
+- Magisk Action Button report via `action.sh`
+- Doctor helper for fast support diagnosis plus Android 17 / ASVD companion contract checks
 - Interactive setup wizard with redacted MAC output by default
 - Report/debug helpers for GitHub/XDA
 - Magisk online update metadata via updateJson
-- Config file support: `/data/adb/asvd-bt-type-helper.conf`
 - Manual only; no boot automation
 - No GMS manipulation
 - No Bluetooth reload
 - No direct `/data/misc/bluedroid/bt_config.conf` patching
-- Verified reference: Pixel 10 Pro XL / Android 16 with H222 BT2MP3 receiver
-
-Online updates:
-
-This module includes `updateJson=https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/update.json` in `module.prop`. Magisk can check future updates after v0.5.3+ is installed.
 
 Quick start after flashing and reboot:
 
@@ -1743,30 +3123,25 @@ tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-grant.sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/asvd.sh
 ```
 
-Recommended safe first checks:
+Safe checks:
 
 ```sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-doctor.sh
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-setup.sh --dry-run
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-compare-types.sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-connected-devices.sh
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-last-devices.sh --connected
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-last-devices.sh --all
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-pick-device.sh --filter "Tribit XSound Go"
+tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-picked.sh --type speaker --dry-run
 tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --dry-run
 ```
 
-Classic commands remain available:
-
-```sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-list.sh
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-get.sh --name H222
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-set-type.sh --name H222 --type car --confirm-set
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-clear-type.sh --name H222 --dry-run
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-debug.sh --name H222
-tsu /system/bin/sh /data/adb/modules/asvd-bt-type-helper/helper-update-info.sh
-```
-
-Note: `car/Carkit` is verified on H222. `speaker` and `headphones` are experimental until device feedback confirms UI behavior.
+`car/Carkit` is verified on H222. Other type values are experimental until device feedback confirms UI behavior.
 EOFREADME
 
 printf '\n== syntax ==\n'
-for f in customize.sh helper-common.sh helper-grant.sh helper-list.sh helper-get.sh helper-set-carkit.sh helper-set-type.sh helper-clear-type.sh helper-report.sh helper-debug.sh helper-setup.sh helper-apply-config.sh helper-doctor.sh helper-update-info.sh asvd.sh; do
+for f in customize.sh helper-common.sh helper-grant.sh helper-list.sh helper-connected-devices.sh helper-last-devices.sh helper-pick-device.sh helper-set-picked.sh helper-get.sh helper-set-carkit.sh helper-set-type.sh helper-clear-type.sh helper-report.sh helper-debug.sh helper-env-verify.sh helper-setup.sh helper-apply-config.sh helper-doctor.sh helper-update-info.sh helper-restore-last.sh helper-compare-types.sh asvd.sh action.sh; do
   sh -n "$MOD/$f"
   echo "PASS $f"
 done
@@ -1787,7 +3162,7 @@ cat > "$UPDATE_JSON" <<EOFUPDATE
   "version": "$VER",
   "versionCode": $VERSION_CODE,
   "zipUrl": "https://github.com/Lycidias93/asvd-bt-type-helper/releases/download/$TAG/ASVD-BT-Type-Helper-$TAG.zip",
-  "changelog": "https://github.com/Lycidias93/asvd-bt-type-helper/releases/tag/$TAG"
+  "changelog": "https://raw.githubusercontent.com/Lycidias93/asvd-bt-type-helper/main/CHANGELOG.md"
 }
 EOFUPDATE
 python -m json.tool "$UPDATE_JSON" >/dev/null
