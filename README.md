@@ -344,3 +344,24 @@ Additional docs:
 Related module:
 
 - Audio Safe Volume Disabler / ASVD: <https://github.com/Lycidias93/audio-safe-volume-battery-aware>
+
+<!-- ASVD_BT_HELPER_V064_ROOT_BRIDGE_START -->
+## ASVD BT Type Helper v0.6.4 · Android 17 Root Bridge
+
+v0.6.4 switches the helper from the Android app/priv-app metadata path to a root-side Binder bridge for Android 17.
+
+Why this exists:
+
+- normal user-app metadata GET/SET is blocked by `BLUETOOTH_PRIVILEGED` on Android 17;
+- the systemless priv-app install path was not reliably registered on the tested Android 17 SukiSU/HybridMount setup;
+- the root bridge uses `IBluetoothManager.registerAdapter(callback)` and `IBluetooth.getMetadata/setMetadata` from root.
+
+Primary helpers:
+
+- `helper-get.sh --name <device>` reads Bluetooth metadata key `17`;
+- `helper-set-type.sh --name <device> --type <type>` writes metadata key `17`;
+- `helper-set-carkit.sh --name <device>` sets the type to `Carkit`;
+- `helper-doctor.sh` checks the root bridge and optional smoke target.
+
+Validated Pixel Android 17 result: H222 changed `Carkit -> Speaker -> Carkit` and restored cleanly. Logs and repository documentation intentionally avoid raw Bluetooth MAC addresses.
+<!-- ASVD_BT_HELPER_V064_ROOT_BRIDGE_END -->

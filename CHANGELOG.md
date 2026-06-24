@@ -229,3 +229,13 @@ Stable release.
 - Added main-menu entries for currently connected devices, last connected hints, and last devices summary.
 - Improved MAC and partial-MAC redaction for Android dumpsys output.
 - Confirmed H222 remains `metadata_17=Carkit` after smoke.
+
+<!-- CHANGELOG_ASVD_BT_HELPER_V064_ROOT_BRIDGE_START -->
+## 0.6.4 - Android 17 root bridge
+
+- Added root-side Binder bridge for Bluetooth metadata key `17` GET/SET.
+- Added root bridge helpers for get/list/set/carkit/clear/doctor.
+- Removed APK dependency from the v0.6.4 module payload.
+- Verified on Pixel Android 17 with temporary type mutation and restore: `Carkit -> Speaker -> Carkit`.
+- Kept Bluetooth MAC addresses out of release notes and repo docs.
+<!-- CHANGELOG_ASVD_BT_HELPER_V064_ROOT_BRIDGE_END -->
